@@ -382,48 +382,7 @@ window.speak = (text, lang) => {
     window.speechSynthesis.speak(utterance);
 };
 
-// Calculator Logic
-const EXCHANGE_RATE = 9.2; // KRW per 1 JPY (Approx)
 
-window.toggleCalculator = () => {
-    const modal = document.getElementById('calc-modal');
-    modal.classList.toggle('active');
-    
-    if (modal.classList.contains('active')) {
-        document.getElementById('calc-input').focus();
-    }
-};
-
-const calcInput = document.getElementById('calc-input');
-if (calcInput) {
-    calcInput.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value) || 0;
-        
-        // KRW
-        const krw = Math.round(val * EXCHANGE_RATE);
-        document.getElementById('res-krw').innerText = krw.toLocaleString() + ' 원';
-        
-        // Tax Free (10%)
-        const taxFree = Math.round(val / 1.1);
-        document.getElementById('res-taxfree').innerText = taxFree.toLocaleString() + ' ¥';
-        
-        // Alert
-        const alertBox = document.getElementById('tax-alert');
-        if (taxFree >= 5000) { // Tax free minimum is 5000 JPY pre-tax, or 5500 incl tax
-            alertBox.classList.add('success');
-            alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
-        } else {
-            alertBox.classList.remove('success');
-            const diff = 5500 - val;
-            if (diff > 0) {
-                 alertBox.innerHTML = `면세 한도(5,500엔)까지 <br><strong>${diff.toLocaleString()}엔</strong> 남았습니다!`;
-            } else {
-                 alertBox.classList.add('success');
-                 alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
-            }
-        }
-    });
-}
 
 // Service Worker Registration
 function registerServiceWorker() {

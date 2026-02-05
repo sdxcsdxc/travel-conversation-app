@@ -16,19 +16,19 @@ const appData = {
         {
             area: '텐진 (Tenjin)',
             spots: [
-                { name: '나카스 야타이 거리', desc: '강변 포장마차 거리. 라멘, 오뎅 추천!', map: 'https://maps.app.goo.gl/example1' },
-                { name: '텐진 야타이 거리', desc: '다이마루 백화점 앞. 현지인 많음.', map: 'https://maps.app.goo.gl/example2' },
-                { name: '파르코 (PARCO)', desc: '캐릭터 샵(지브리, 짱구) & 맛집 지하상가', map: 'https://maps.app.goo.gl/example3' },
-                { name: '다이묘 거리', desc: '힙한 편집샵과 카페가 많은 거리', map: 'https://maps.app.goo.gl/example4' }
+                { name: '나카스 야타이 거리', desc: '강변 포장마차 거리. 라멘, 오뎅 추천!', map: 'https://www.google.com/maps/search/?api=1&query=Nakasu+Yatai' },
+                { name: '텐진 야타이 거리', desc: '다이마루 백화점/일본은행 앞.', map: 'https://www.google.com/maps/search/?api=1&query=Tenjin+Yatai' },
+                { name: '파르코 (PARCO)', desc: '캐릭터 샵(지브리, 짱구) & 맛집 지하상가', map: 'https://www.google.com/maps/search/?api=1&query=Fukuoka+Parco' },
+                { name: '다이묘 거리', desc: '힙한 편집샵과 카페가 많은 거리', map: 'https://www.google.com/maps/search/?api=1&query=Daimyo+Fukuoka' }
             ]
         },
         {
             area: '유후인 (Yufuin)',
             spots: [
-                { name: '킨린코 호수', desc: '아침 물안개가 예쁜 필수 포토스팟', map: 'https://maps.app.goo.gl/example5' },
-                { name: '유노츠보 거리', desc: '간식거리 천국 (금상고로케, 미르히)', map: 'https://maps.app.goo.gl/example6' },
-                { name: '자전거 대여소 (역앞)', desc: '자전거로 호수까지 15분. 풍경 굿!', map: 'https://maps.app.goo.gl/example7' },
-                { name: '비스피크 (B-Speak)', desc: '오픈런 필수 롤케이크 맛집', map: 'https://maps.app.goo.gl/example8' }
+                { name: '킨린코 호수', desc: '아침 물안개가 예쁜 필수 포토스팟', map: 'https://www.google.com/maps/search/?api=1&query=Kinrinko+Lake' },
+                { name: '유노츠보 거리', desc: '간식거리 천국 (금상고로케, 미르히)', map: 'https://www.google.com/maps/search/?api=1&query=Yunotsubo+Street' },
+                { name: '자전거 대여소 (역앞)', desc: '자전거로 호수까지 15분. 유후인역 앞.', map: 'https://www.google.com/maps/search/?api=1&query=Yufuin+Station+Bicycle+Rental' },
+                { name: '비스피크 (B-Speak)', desc: '오픈런 필수 롤케이크 맛집', map: 'https://www.google.com/maps/search/?api=1&query=B-Speak+Yufuin' }
             ]
         }
     ],

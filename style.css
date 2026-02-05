@@ -322,8 +322,8 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--separator); /* Default inactive color */
-    font-size: 1.4rem;
+    color: #C7C7CC; /* Darker grey for better visibility */
+    font-size: 1.6rem; /* Slightly larger */
     flex-shrink: 0;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     -webkit-user-select: none;

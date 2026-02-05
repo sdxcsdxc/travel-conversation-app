@@ -34,19 +34,23 @@ function init() {
 }
 
 function loadFavorites() {
-    const stored = localStorage.getItem('travel_favorites');
-    if (stored) {
-        try {
+    try {
+        const stored = localStorage.getItem('travel_favorites');
+        if (stored) {
             favorites = JSON.parse(stored);
-        } catch (e) {
-            console.error('Failed to parse favorites', e);
-            favorites = [];
         }
+    } catch (e) {
+        console.error('Failed to access localStorage or parse favorites', e);
+        favorites = [];
     }
 }
 
 function saveFavorites() {
-    localStorage.setItem('travel_favorites', JSON.stringify(favorites));
+    try {
+        localStorage.setItem('travel_favorites', JSON.stringify(favorites));
+    } catch (e) {
+        console.error('Failed to save favorites to localStorage', e);
+    }
 }
 
 function toggleFavorite(phraseKo) {

@@ -1,0 +1,317 @@
+/* CSS Embed from complete version */
+:root {
+    --primary-color: #007AFF;
+    --primary-light: #E5F1FF;
+    --text-color: #1a1a1a;
+    --text-secondary: #666;
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --border-radius: 12px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.05);
+    --safe-area-top: env(safe-area-inset-top);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Noto Sans KR', 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding-top: calc(60px + var(--safe-area-top));
+    padding-bottom: calc(20px + var(--safe-area-bottom));
+}
+
+/* Header */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(60px + var(--safe-area-top));
+    padding-top: var(--safe-area-top);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+    z-index: 1000;
+}
+
+.app-header h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Language Toggle */
+.lang-toggle {
+    display: flex;
+    background: #eee;
+    padding: 3px;
+    border-radius: 20px;
+}
+
+.lang-btn {
+    border: none;
+    background: none;
+    padding: 6px 12px;
+    border-radius: 17px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lang-btn.active {
+    background: #fff;
+    color: var(--primary-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Search Bar */
+.search-container {
+    position: sticky;
+    top: calc(60px + var(--safe-area-top));
+    background: var(--bg-color);
+    padding: 10px 20px 0 20px;
+    z-index: 950;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    box-shadow: 0 4px 12px rgba(0,122,255,0.15);
+    transform: translateY(-1px);
+}
+
+/* Category Navigation adjustment */
+.category-nav {
+    position: sticky;
+    top: calc(115px + var(--safe-area-top)); /* Push down */
+    background: var(--bg-color);
+    padding: 10px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    z-index: 900;
+    padding-left: 20px;
+}
+
+.category-nav ul {
+    display: flex;
+    list-style: none;
+    padding-right: 20px;
+}
+
+.category-nav li {
+    margin-right: 10px;
+}
+
+.cat-btn {
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cat-btn.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 5px rgba(0,122,255,0.3);
+}
+
+/* Valid Content Area */
+#content-area {
+    padding: 16px 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 10px;
+}
+
+/* Phrase Cards */
+.phrase-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.1s;
+    border: 1px solid transparent;
+}
+
+.phrase-card:active {
+    transform: scale(0.98);
+    background: #f0f8ff;
+}
+
+.phrase-content {
+    flex: 1;
+}
+
+.phrase-ko {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.phrase-target {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.pronunciation {
+    font-size: 1.1rem; /* Bigger for readability */
+    color: var(--primary-color); /* Highlight color */
+    font-weight: 700; /* Bold */
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+.speak-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    margin-left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #333;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.speak-btn:active {
+    background: #e0e0e0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+}
+
+/* Show Mode Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+.overlay-ko {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.overlay-target {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #000;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    word-break: keep-all;
+}
+
+.overlay-pron {
+    font-size: 1.1rem;
+    color: #007AFF;
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+.overlay-btn-group {
+    display: flex;
+    gap: 20px;
+}
+
+.action-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.1s;
+}
+
+.btn-speak-big {
+    background: #007AFF;
+    color: white;
+}
+
+.btn-close {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+}
+
+.helper-text {
+    margin-top: 30px;
+    font-size: 0.85rem;
+    color: #bbb;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>여행 회화 (Travel Talk)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+/* CSS Embed */
+:root {
+    --primary-color: #007AFF;
+    --primary-light: #E5F1FF;
+    --text-color: #1a1a1a;
+    --text-secondary: #666;
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --border-radius: 12px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.05);
+    --safe-area-top: env(safe-area-inset-top);
+    --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Noto Sans KR', 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding-top: calc(60px + var(--safe-area-top));
+    padding-bottom: calc(20px + var(--safe-area-bottom));
+}
+
+/* Header */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(60px + var(--safe-area-top));
+    padding-top: var(--safe-area-top);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+    z-index: 1000;
+}
+
+.app-header h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Language Toggle */
+.lang-toggle {
+    display: flex;
+    background: #eee;
+    padding: 3px;
+    border-radius: 20px;
+}
+
+.lang-btn {
+    border: none;
+    background: none;
+    padding: 6px 12px;
+    border-radius: 17px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lang-btn.active {
+    background: #fff;
+    color: var(--primary-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Search Bar */
+.search-container {
+    position: sticky;
+    top: calc(60px + var(--safe-area-top));
+    background: var(--bg-color);
+    padding: 10px 20px 0 20px;
+    z-index: 950;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    box-shadow: 0 4px 12px rgba(0,122,255,0.15);
+    transform: translateY(-1px);
+}
+
+/* Category Navigation adjustment */
+.category-nav {
+    top: calc(120px + var(--safe-area-top)); /* Push down to make room for search */
+    padding-top: 10px;
+}
+
+/* Valid Content Area */
+#content-area {
+    padding: 16px 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 10px;
+}
+
+/* Phrase Cards */
+.phrase-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.1s;
+    border: 1px solid transparent;
+}
+
+.phrase-card:active {
+    transform: scale(0.98);
+    background: #f0f8ff;
+}
+
+.phrase-content {
+    flex: 1;
+}
+
+.phrase-ko {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.phrase-target {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.pronunciation {
+    font-size: 1.1rem; /* Bigger for readability */
+    color: var(--primary-color); /* Highlight color */
+    font-weight: 700; /* Bold */
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+.speak-btn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    margin-left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #333;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.speak-btn:active {
+    background: #e0e0e0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+}
+
+/* Show Mode Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+.overlay-ko {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.overlay-target {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #000;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    word-break: keep-all;
+}
+
+.overlay-pron {
+    font-size: 1.1rem;
+    color: #007AFF;
+    margin-bottom: 40px;
+    font-weight: 500;
+}
+
+.overlay-btn-group {
+    display: flex;
+    gap: 20px;
+}
+
+    .action-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.1s;
+}
+
+.btn-speak-big {
+    background: #007AFF;
+    color: white;
+}
+
+.btn-close {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+}
+
+.helper-text {
+    margin-top: 30px;
+    font-size: 0.85rem;
+    color: #bbb;
+}
+
+/* Quick Reply Bar */
+/* Adjust content padding for bottom bar - REMOVED */
+#content-area {
+    padding-bottom: 20px;
+}
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>✈️ 여행 회화</h1>
+        <div class="lang-toggle">
+            <button id="btn-en" class="lang-btn active" onclick="setLanguage('en')">English</button>
+            <button id="btn-jp" class="lang-btn" onclick="setLanguage('jp')">日本語</button>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="search" id="search-input" class="search-input" placeholder="🔍 검색 (예: 화장실, 물, 가격, toilet)">
+    </div>
+
+    <nav class="category-nav">
+        <ul id="category-list">
+            <!-- Categories will be injected here by JS -->
+        </ul>
+    </nav>
+
+    <main id="content-area">
+        <!-- Phrase cards will be injected here -->
+        <div class="empty-state">
+            카테고리를 선택해주세요.
+        </div>
+    </main>
+
+    <!-- Quick Reply Bar -->
+    <!-- Quick Reply Bar Removed -->
+
+    <!-- Fullscreen Overlay -->
+    <div id="overlay" class="overlay" onclick="if(event.target === this) closeOverlay()">
+        <div class="overlay-ko" id="overlay-ko">한국어 의미</div>
+        <div class="overlay-target" id="overlay-target">Target Text</div>
+        <div class="overlay-pron" id="overlay-pron">Pronunciation</div>
+        
+        <div class="overlay-btn-group">
+            <button class="action-btn btn-speak-big" onclick="replayAudio()">🔊</button>
+            <button class="action-btn btn-close" onclick="closeOverlay()">✕</button>
+        </div>
+        <div class="helper-text">화면을 탭하면 닫힙니다</div>
+    </div>
+
+    <script>
+    // DATA Embed
+    const appData = {
+    categories: [
+        { id: 'basic', name: '👋 기본/인사', icon: '👋' },
+        { id: 'airport', name: '✈️ 공항/기내', icon: '✈️' },
+        { id: 'transport', name: '🚆 길찾기/교통', icon: '🚆' },
+        { id: 'hotel', name: '🏨 숙소/호텔', icon: '🏨' },
+        { id: 'dining', name: '🍽️ 식당/카페', icon: '🍽️' },
+        { id: 'shopping', name: '🛍️ 쇼핑/편의점', icon: '🛍️' },
+        { id: 'emergency', name: '🚨 비상/약국', icon: '🚨' }
+    ],
+    phrases: {
+        basic: [
+            { ko: '안녕하세요 (아침)', en: 'Good morning', pr_en: '굿 모닝', jp: 'おはようございます', pr_jp: '오하요- 고자이마스' },
+            { ko: '안녕하세요 (점심)', en: 'Hello', pr_en: '헬로', jp: 'こんにちは', pr_jp: '곤니찌와' },
+            { ko: '안녕하세요 (저녁)', en: 'Good evening', pr_en: '굿 이브닝', jp: 'こんばんは', pr_jp: '곤방와' },
+            { ko: '감사합니다', en: 'Thank you', pr_en: '땡큐', jp: 'ありがとうございます', pr_jp: '아리가또- 고자이마스' },
+            { ko: '천만에요 (아녜요)', en: 'You\'re welcome', pr_en: '유어 웰컴', jp: 'いいえ、いいえ', pr_jp: '이이에, 이이에' },
+            { ko: '죄송합니다', en: 'I am sorry', pr_en: '아이 엠 쏘리', jp: 'すみません', pr_jp: '스미마센' },
+            { ko: '저기요 / 실례합니다', en: 'Excuse me', pr_en: '익스큐즈 미', jp: 'すみません', pr_jp: '스미마센' },
+            { ko: '잠시만요', en: 'Just a moment', pr_en: '저스트 어 모먼트', jp: 'ちょっと待ってください', pr_jp: '춋또 맛떼 쿠다사이' },
+            { ko: '일본어 못해요', en: 'I cannot speak Japanese', pr_en: '아이 캔낫 스피크 재패니즈', jp: '日本語できません', pr_jp: '니혼고 데키마센' },
+            { ko: '한국어 메뉴 있나요?', en: 'Korean menu?', pr_en: '코리안 메뉴?', jp: '韓国語のメニューありますか', pr_jp: '칸코쿠고노 메뉴- 아리마스까' },
+            { ko: '네', en: 'Yes', pr_en: '예스', jp: 'はい', pr_jp: '하이' },
+            { ko: '아니요', en: 'No', pr_en: '노', jp: 'いいえ', pr_jp: '이이에' },
+            { ko: '괜찮아요 (거절)', en: 'No, thank you', pr_en: '노 땡큐', jp: '大丈夫です', pr_jp: '다이죠-부 데스' },
+            { ko: '못 알아들었어요', en: 'I don\'t understand', pr_en: '아이 돈 언더스탠드', jp: 'わかりません', pr_jp: '와카리마센' },
+            { ko: '다시 말해주세요', en: 'Once more?', pr_en: '원스 모어?', jp: 'もう一回お願いします', pr_jp: '모- 잇카이 오네가이시마스' },
+            { ko: '천천히 말해주세요', en: 'Slowly, please', pr_en: '슬로우리 플리즈', jp: 'ゆっくりお願いします', pr_jp: '윳쿠리 오네가이시마스' },
+            { ko: '써주세요', en: 'Write it down', pr_en: '라이트 잇 다운', jp: '書いてください', pr_jp: '카이떼 쿠다사이' },
+            { ko: '사진 찍어주세요', en: 'Take a picture?', pr_en: '테이크 어 픽쳐?', jp: '写真撮ってもらえますか', pr_jp: '샤신 톳떼 모라에마스까' },
+            { ko: '화장실 어디예요?', en: 'Where is the restroom?', pr_en: '웨어 이즈 더 레스트룸?', jp: 'トイレはどこですか', pr_jp: '토이레와 도코데스까' },
+            { ko: '편의점 어디예요?', en: 'Convenience store?', pr_en: '컨비니언스 스토어?', jp: 'コンビニはどこですか', pr_jp: '콤비니와 도코데스까' }
+        ],
+        airport: [
+            { ko: '제 자리 어디예요?', en: 'Where is my seat?', pr_en: '웨어 이즈 마이 시트?', jp: '座席はどこですか', pr_jp: '자세키와 도코데스까' },
+            { ko: '물 주세요', en: 'Water, please', pr_en: '워터 플리즈', jp: 'お水ください', pr_jp: '오미즈 쿠다사이' },
+            { ko: '입국 신고서 도와주세요', en: 'Help with card', pr_en: '헬프 위드 카드', jp: '書き方教えてください', pr_jp: '카키카타 오시에떼 쿠다사이' },
+            { ko: '짐이 안 나왔어요', en: 'No baggage', pr_en: '노 배기지', jp: '荷物が出てきません', pr_jp: '니모츠가 데테키마센' },
+            { ko: '환전 어디서 해요?', en: 'Exchange?', pr_en: '익스체인지?', jp: '両替はどこですか', pr_jp: '료-가에와 도코데스까' },
+            { ko: '유심 어디서 사요?', en: 'SIM card?', pr_en: '심 카드?', jp: 'SIMカードどこで買えますか', pr_jp: '심카-도 도코데 카에마스까' },
+            { ko: '시내 가는 버스 어디예요?', en: 'Bus to city?', pr_en: '버스 투 시티?', jp: '市内行きのバスどこですか', pr_jp: '시나이 이키노 바스 도코데스까' },
+            { ko: '택시 어디서 타요?', en: 'Taxi stand?', pr_en: '택시 스탠드?', jp: 'タクシー乗り場どこですか', pr_jp: '타쿠시- 노리바 도코데스까' },
+            { ko: '와이파이 되나요?', en: 'Wi-Fi?', pr_en: '와이파이?', jp: 'Wi-Fiありますか', pr_jp: '와이파이 아리마스까' }
+        ],
+        transport: [
+            { ko: '표 파는 곳 어디예요?', en: 'Ticket office?', pr_en: '티켓 오피스?', jp: '切符売り場どこですか', pr_jp: '킷뿌 우리바 도코데스까' },
+            { ko: '도쿄역 가나요?', en: 'To Tokyo station?', pr_en: '투 도쿄 스테이션?', jp: '東京駅に行きますか', pr_jp: '토-쿄-에키니 이키마스까' },
+            { ko: '이거 타면 되나요?', en: 'Is this right?', pr_en: '이즈 디스 라이트?', jp: 'これに乗ればいいですか', pr_jp: '코레니 노레바 이이데스까' },
+            { ko: '얼마예요?', en: 'How much?', pr_en: '하우 머치?', jp: 'いくらですか', pr_jp: '이쿠라데스까' },
+            { ko: '노선도 있어요?', en: 'Map?', pr_en: '맵?', jp: '路線図ありますか', pr_jp: '로센즈 아리마스까' },
+            { ko: '여기서 내려주세요', en: 'Stop here', pr_en: '스탑 히어', jp: 'ここで降ろしてください', pr_jp: '코코데 오로시떼 쿠다사이' },
+            { ko: '충전 어디서 해요?', en: 'Charge?', pr_en: '차지?', jp: 'チャージどこですか', pr_jp: '챠-지 도코데스까' },
+            { ko: '출구 어디예요?', en: 'Exit?', pr_en: '엑시트?', jp: '出口はどこですか', pr_jp: '데구치와 도코데스까' },
+            { ko: '엘리베이터 어디예요?', en: 'Elevator?', pr_en: '엘리베이터?', jp: 'エレベーターどこですか', pr_jp: '에레베-타- 도코데스까' }
+        ],
+        hotel: [
+            { ko: '체크인 할게요', en: 'Check-in, please', pr_en: '체크인 플리즈', jp: 'チェックインお願いします', pr_jp: '쳇쿠인 오네가이시마스' },
+            { ko: '제 이름으로 예약했어요', en: 'Reservation name...', pr_en: '레저베이션 네임...', jp: '予約してます', pr_jp: '요야쿠 시테이마스' },
+            { ko: '와이파이 비번이 뭐예요?', en: 'Wi-Fi password?', pr_en: '와이파이 패스워드?', jp: 'Wi-Fiのパスワードは？', pr_jp: '와이파이 파스와-도와?' },
+            { ko: '짐 맡겨도 되나요?', en: 'Leave bags?', pr_en: '리브 백스?', jp: '荷物預けられますか', pr_jp: '니모츠 아즈케라레마스까' },
+            { ko: '수건 더 주세요', en: 'More towels', pr_en: '모어 타월스', jp: 'タオルください', pr_jp: '타오루 쿠다사이' },
+            { ko: '물 안 나와요', en: 'No water', pr_en: '노 워터', jp: 'お湯が出ません', pr_jp: '오유가 데마센' },
+            { ko: '방 청소 해주세요', en: 'Clean room', pr_en: '클린 룸', jp: '掃除お願いします', pr_jp: '소-지 오네가이시마스' },
+            { ko: '체크아웃 할게요', en: 'Check-out', pr_en: '체크아웃', jp: 'チェックアウトお願いします', pr_jp: '쳇쿠아우토 오네가이시마스' },
+            { ko: '택시 불러주세요', en: 'Taxi, please', pr_en: '택시 플리즈', jp: 'タクシー呼んでください', pr_jp: '타쿠시- 욘데 쿠다사이' }
+        ],
+        dining: [
+            { ko: '몇 명이에요 (손가락)', en: 'This many', pr_en: '디스 매니', jp: '〇人です', pr_jp: '...닌 데스 (숫자 손짓)' },
+            { ko: '주문할게요', en: 'Order, please', pr_en: '오더 플리즈', jp: '注文お願いします', pr_jp: '츄-몬 오네가이시마스' },
+            { ko: '추천해주세요', en: 'Recommendation?', pr_en: '레코멘데이션?', jp: 'おすすめは？', pr_jp: '오스스메와?' },
+            { ko: '이거 주세요 (가리키며)', en: 'This one', pr_en: '디스 원', jp: 'これください', pr_jp: '코레 쿠다사이' },
+            { ko: '물 주세요', en: 'Water, please', pr_en: '워터 플리즈', jp: 'お水ください', pr_jp: '오미즈 쿠다사이' },
+            { ko: '고수 빼주세요', en: 'No cilantro', pr_en: '노 실란트로', jp: 'パクチーぬきで', pr_jp: '파쿠치- 누키데' },
+            { ko: '덜 맵게 해주세요', en: 'Less spicy', pr_en: '레스 스파이시', jp: '辛くしないで', pr_jp: '카라쿠 시나이데' },
+            { ko: '계산서 주세요', en: 'Check, please', pr_en: '체크 플리즈', jp: 'お会計お願いします', pr_jp: '오카이케이 오네가이시마스' },
+            { ko: '카드 돼요?', en: 'Card OK?', pr_en: '카드 오케이?', jp: 'カード使えますか', pr_jp: '카-도 츠카에마스까' },
+            { ko: '따로 계산할게요', en: 'Separate checks', pr_en: '세퍼레이트 체크스', jp: '別々でお願いします', pr_jp: '베츠베츠데 오네가이시마스' },
+            { ko: '포장 돼요?', en: 'To go?', pr_en: '투 고?', jp: '持ち帰りできますか', pr_jp: '모치카에리 데키마스까' }
+        ],
+        shopping: [
+            { ko: '구경만 할게요', en: 'Just looking', pr_en: '저스트 루킹', jp: '見てるだけです', pr_jp: '미테루 다케데스' },
+            { ko: '입어봐도 돼요?', en: 'Try on?', pr_en: '트라이 온?', jp: '試着いいですか', pr_jp: '시챠쿠 이이데스까' },
+            { ko: '새거 있어요?', en: 'New one?', pr_en: '뉴 원?', jp: '新しいのありますか', pr_jp: '아타라시이노 아리마스까' },
+            { ko: '면세 돼요?', en: 'Tax free?', pr_en: '택스 프리?', jp: '免税できますか', pr_jp: '멘제이 데키마스까' },
+            { ko: '할인 돼요?', en: 'Discount?', pr_en: '디스카운트?', jp: '安くなりますか', pr_jp: '야스쿠 나리마스까' },
+            { ko: '봉투 주세요', en: 'Bag, please', pr_en: '백 플리즈', jp: '袋ください', pr_jp: '후쿠로 쿠다사이' },
+            { ko: '이거 주세요', en: 'This one', pr_en: '디스 원', jp: 'これください', pr_jp: '코레 쿠다사이' },
+            { ko: '영수증 주세요', en: 'Receipt', pr_en: '리시트', jp: 'レシートください', pr_jp: '레시-토 쿠다사이' }
+        ],
+        emergency: [
+            { ko: '도와주세요!', en: 'Help!', pr_en: '헬프!', jp: '助けて！', pr_jp: '타스케떼!' },
+            { ko: '경찰!', en: 'Police!', pr_en: '폴리스!', jp: '警察！', pr_jp: '케이사츠!' },
+            { ko: '구급차!', en: 'Ambulance!', pr_en: '앰뷸런스!', jp: '救急車！', pr_jp: '큐-큐-샤!' },
+            { ko: '병원 어디예요?', en: 'Hospital?', pr_en: '호스피탈?', jp: '病院はどこですか', pr_jp: '뵤-인와 도코데스까' },
+            { ko: '약국 어디예요?', en: 'Pharmacy?', pr_en: '파머시?', jp: '薬局はどこですか', pr_jp: '약쿄쿠와 도코데스까' },
+            { ko: '소화제 있어요?', en: 'Digestion medicine?', pr_en: '다이제스천 메디신?', jp: '胃薬ありますか', pr_jp: '이구스리 아리마스까' },
+            { ko: '진통제 있어요?', en: 'Painkiller?', pr_en: '페인 킬러?', jp: '痛み止めありますか', pr_jp: '이타미도메 아리마스까' },
+            { ko: '아파요', en: 'It hurts', pr_en: '잇 허츠', jp: '痛いです', pr_jp: '이타이데스' },
+            { ko: '잃어버렸어요', en: 'Lost it', pr_en: '로스트 잇', jp: 'なくしました', pr_jp: '나쿠시마시따' },
+            { ko: '한국 대사관', en: 'Korean Embassy', pr_en: '코리안 엠버시', jp: '韓国大使館', pr_jp: '칸코쿠 타이시칸' },
+            { ko: '한국어 하는 사람?', en: 'Korean speaker?', pr_en: '코리안 스피커?', jp: '韓国語できる人？', pr_jp: '칸코쿠고 데키루 히토?' }
+        ]
+    }
+};
+
+    // LOGIC Embed
+    let currentLang = 'en';
+    let currentCategory = 'basic';
+    let currentPhrases = [];
+
+    const categoryListEl = document.getElementById('category-list');
+    const contentAreaEl = document.getElementById('content-area');
+    const btnEn = document.getElementById('btn-en');
+    const btnJp = document.getElementById('btn-jp');
+    const searchInput = document.getElementById('search-input');
+
+    const APP_TITLE_MAP = {
+        'en': 'Travel Talk',
+        'jp': '旅行会話'
+    };
+
+    function init() {
+        renderCategories();
+        updatePhrases(); // Initial Load
+
+        // Search Event Listener
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase().trim();
+            if (keyword) {
+                // Deactivate category buttons visually when searching
+                document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+                searchPhrases(keyword);
+            } else {
+                setCategory(currentCategory);
+            }
+        });
+    }
+
+    function renderCategories() {
+        categoryListEl.innerHTML = appData.categories.map(cat => `
+            <li>
+                <button 
+                    class="cat-btn ${cat.id === currentCategory ? 'active' : ''}" 
+                    onclick="setCategory('${cat.id}')">
+                    ${cat.icon} ${cat.name}
+                </button>
+            </li>
+        `).join('');
+    }
+
+    function setCategory(categoryId) {
+        currentCategory = categoryId;
+        searchInput.value = ''; // Clear search when category clicked
+        renderCategories(); // Update visual state
+        updatePhrases();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updatePhrases() {
+        // Load current category into global state
+        currentPhrases = appData.phrases[currentCategory];
+        renderPhrasesList();
+    }
+
+    function searchPhrases(keyword) {
+        // Search all categories
+        let results = [];
+        Object.keys(appData.phrases).forEach(key => {
+            const matches = appData.phrases[key].filter(p => 
+                p.ko.includes(keyword) || 
+                p.en.toLowerCase().includes(keyword) || 
+                (p.jp && p.jp.includes(keyword))
+            );
+            results = [...results, ...matches];
+        });
+        currentPhrases = results;
+        renderPhrasesList();
+    }
+
+    function renderPhrasesList() {
+        if (!currentPhrases || currentPhrases.length === 0) {
+            contentAreaEl.innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>';
+            return;
+        }
+
+        contentAreaEl.innerHTML = currentPhrases.map((phrase, index) => {
+            const targetText = phrase[currentLang];
+            const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
+
+            return `
+            <div class="phrase-card" onclick="openOverlay(${index})">
+                <div class="phrase-content">
+                    <div class="phrase-ko">${phrase.ko}</div>
+                    <div class="phrase-target">
+                        ${targetText}
+                        ${pronunciation ? `<div class="pronunciation">${pronunciation}</div>` : ''}
+                    </div>
+                </div>
+                <button class="speak-btn" aria-label="Listen">
+                    🔊
+                </button>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // Overlay Logic
+    let currentOverlayText = '';
+    
+    window.openOverlay = (index) => {
+        // Use Global currentPhrases instead of appData lookup
+        const phrase = currentPhrases[index]; 
+        const targetText = phrase[currentLang];
+        const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
+
+        // Set Content
+        document.getElementById('overlay-ko').innerText = phrase.ko;
+        document.getElementById('overlay-target').innerText = targetText;
+        document.getElementById('overlay-pron').innerText = pronunciation || '';
+
+        // Show
+        document.getElementById('overlay').classList.add('active');
+        
+        // Auto Speak once
+        currentOverlayText = targetText; 
+        speak(currentOverlayText, currentLang);
+    };
+
+    window.closeOverlay = () => {
+        document.getElementById('overlay').classList.remove('active');
+        window.speechSynthesis.cancel();
+    };
+
+    window.replayAudio = () => {
+        if(currentOverlayText) speak(currentOverlayText, currentLang);
+    };
+
+    // Quick Reply Logic - Removed
+
+    window.setCategory = (categoryId) => {
+        currentCategory = categoryId;
+        renderCategories();
+        renderPhrases();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.setLanguage = (lang) => {
+        currentLang = lang;
+        if (lang === 'en') {
+            btnEn.classList.add('active');
+            btnJp.classList.remove('active');
+        } else {
+            btnEn.classList.remove('active');
+            btnJp.classList.add('active');
+        }
+        renderPhrases();
+    };
+
+    window.speak = (text, lang) => {
+        if (!window.speechSynthesis) {
+            alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
+            return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang === 'en' ? 'en-US' : 'ja-JP';
+        utterance.rate = 0.9; 
+        window.speechSynthesis.speak(utterance);
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

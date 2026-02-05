@@ -1,5 +1,5 @@
 // State
-let currentLang = 'en'; // 'en' or 'jp'
+let currentLang = 'jp'; // 'en' or 'jp'
 let currentCategory = 'basic';
 let currentPhrases = [];
 let favorites = []; // Array of phrase IDs or objects. Storing phrase objects for simplicity in this no-backend setup.

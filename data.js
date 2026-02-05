@@ -1,12 +1,36 @@
 const appData = {
     categories: [
         { id: 'basic', name: '👋 기본/인사', icon: '👋' },
+        { id: 'guide', name: '🗺️ 여행 가이드', icon: '🗺️' }, /* New */
+        { id: 'yatai', name: '🍜 텐진/야타이', icon: '🍜' }, /* New */
+        { id: 'ryokan', name: '♨️ 유후인/료칸', icon: '♨️' }, /* New */
         { id: 'airport', name: '✈️ 공항/기내', icon: '✈️' },
         { id: 'transport', name: '🚆 길찾기/교통', icon: '🚆' },
         { id: 'hotel', name: '🏨 숙소/호텔', icon: '🏨' },
         { id: 'dining', name: '🍽️ 식당/카페', icon: '🍽️' },
         { id: 'shopping', name: '🛍️ 쇼핑/편의점', icon: '🛍️' },
         { id: 'emergency', name: '🚨 비상/약국', icon: '🚨' }
+    ],
+    /* New Section: Travel Guides */
+    guides: [
+        {
+            area: '텐진 (Tenjin)',
+            spots: [
+                { name: '나카스 야타이 거리', desc: '강변 포장마차 거리. 라멘, 오뎅 추천!', map: 'https://maps.app.goo.gl/example1' },
+                { name: '텐진 야타이 거리', desc: '다이마루 백화점 앞. 현지인 많음.', map: 'https://maps.app.goo.gl/example2' },
+                { name: '파르코 (PARCO)', desc: '캐릭터 샵(지브리, 짱구) & 맛집 지하상가', map: 'https://maps.app.goo.gl/example3' },
+                { name: '다이묘 거리', desc: '힙한 편집샵과 카페가 많은 거리', map: 'https://maps.app.goo.gl/example4' }
+            ]
+        },
+        {
+            area: '유후인 (Yufuin)',
+            spots: [
+                { name: '킨린코 호수', desc: '아침 물안개가 예쁜 필수 포토스팟', map: 'https://maps.app.goo.gl/example5' },
+                { name: '유노츠보 거리', desc: '간식거리 천국 (금상고로케, 미르히)', map: 'https://maps.app.goo.gl/example6' },
+                { name: '자전거 대여소 (역앞)', desc: '자전거로 호수까지 15분. 풍경 굿!', map: 'https://maps.app.goo.gl/example7' },
+                { name: '비스피크 (B-Speak)', desc: '오픈런 필수 롤케이크 맛집', map: 'https://maps.app.goo.gl/example8' }
+            ]
+        }
     ],
     phrases: {
         basic: [
@@ -30,6 +54,27 @@ const appData = {
             { ko: '사진 찍어주세요', en: 'Take a picture?', pr_en: '테이크 어 픽쳐?', jp: '写真撮ってもらえますか', pr_jp: '샤신 톳떼 모라에마스까' },
             { ko: '화장실 어디예요?', en: 'Where is the restroom?', pr_en: '웨어 이즈 더 레스트룸?', jp: 'トイレはどこですか', pr_jp: '토이레와 도코데스까' },
             { ko: '편의점 어디예요?', en: 'Convenience store?', pr_en: '컨비니언스 스토어?', jp: 'コンビニはどこですか', pr_jp: '콤비니와 도코데스까' }
+        ],
+        yatai: [
+            { ko: '몇 명이에요 (손가락)', en: 'How many people', pr_en: '하우 매니 피플', jp: '何名様ですか', pr_jp: '난메이 사마 데스까' },
+            { ko: '자리 있나요?', en: 'Any seats?', pr_en: '애니 시츠?', jp: '空いてますか', pr_jp: '아이떼마스까' },
+            { ko: '추천 메뉴 주세요', en: 'Recommendation?', pr_en: '레코멘데이션?', jp: 'おすすめください', pr_jp: '오스스메 쿠다사이' },
+            { ko: '오뎅 주세요', en: 'Oden, please', pr_en: '오뎅 플리즈', jp: 'おでんください', pr_jp: '오뎅 쿠다사이' },
+            { ko: '라멘 주세요', en: 'Ramen, please', pr_en: '라멘 플리즈', jp: 'ラーメンください', pr_jp: '라-멘 쿠다사이' },
+            { ko: '생맥주 주세요', en: 'Draft beer', pr_en: '드래프트 비어', jp: '生ビールください', pr_jp: '나마비-루 쿠다사이' },
+            { ko: '화장실 멀어요?', en: 'Must go restroom', pr_en: '머스트 고 레스트룸', jp: 'トイレ遠いですか', pr_jp: '토이레 토-이데스까' },
+            { ko: '옆에 앉아도 되나요?', en: 'Sit here?', pr_en: '싯 히어?', jp: '隣いいですか', pr_jp: '토나리 이이데스까' },
+            { ko: '잘 먹었습니다', en: 'Delicious', pr_en: '딜리셔스', jp: 'ごちそうさまでした', pr_jp: '고치소-사마데시따' }
+        ],
+        ryokan: [
+            { ko: '체크인 할게요', en: 'Check-in', pr_en: '체크인', jp: 'チェックインお願いします', pr_jp: '쳇쿠인 오네가이시마스' },
+            { ko: '석식 몇 시예요?', en: 'Dinner time?', pr_en: '디너 타임?', jp: '夕食は何時ですか', pr_jp: '유-쇼쿠와 난지데스까' },
+            { ko: '조식 몇 시예요?', en: 'Breakfast time?', pr_en: '브렉퍼스트 타임?', jp: '朝食は何時ですか', pr_jp: '쵸-쇼쿠와 난지데스까' },
+            { ko: '가족탕 예약 가능한가요?', en: 'Private bath?', pr_en: '프라이빗 배스?', jp: '貸切風呂予約できますか', pr_jp: '카시키리부로 요야쿠 데키마스까' },
+            { ko: '유카타 사이즈 바꿔주세요', en: 'Change Yukata size', pr_en: '체인지 유카타 사이즈', jp: '浴衣のサイズ変えてください', pr_jp: '유카타노 사이즈 카에떼 쿠다사이' },
+            { ko: '송영 차량 있나요?', en: 'Shuttle bus?', pr_en: '셔틀 버스?', jp: '送迎バスありますか', pr_jp: '소-게이바스 아리마스까' },
+            { ko: '자전거 빌릴 수 있나요?', en: 'Rent a nike?', pr_en: '렌트 어 바이크?', jp: '自転車借りれますか', pr_jp: '지텐샤 카리레마스까' },
+            { ko: '유후인역 가주세요', en: 'To Yufuin station', pr_en: '투 유후인 스테이션', jp: '由布院駅までお願いします', pr_jp: '유후인에키마데 오네가이시마스' }
         ],
         airport: [
             { ko: '제 자리 어디예요?', en: 'Where is my seat?', pr_en: '웨어 이즈 마이 시트?', jp: '座席はどこですか', pr_jp: '자세키와 도코데스까' },

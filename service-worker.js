@@ -1,4 +1,4 @@
-const CACHE_NAME = 'travel-talk-v5';
+const CACHE_NAME = 'travel-talk-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,14 +8,33 @@ const ASSETS_TO_CACHE = [
   './icon.svg'
 ];
 
-// Install Event: Cache assets
+// Install Event: Cache assets and force replace old SW
 self.addEventListener('install', (event) => {
+  // Update Immediately
+  self.skipWaiting();
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
         return cache.addAll(ASSETS_TO_CACHE);
       })
+  );
+});
+
+// Activate Event: Cleanup old caches and claim clients immediately
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim()) // Take control of all clients immediately
   );
 });
 

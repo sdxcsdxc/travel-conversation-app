@@ -11,27 +11,128 @@ const btnEn = document.getElementById('btn-en');
 const btnJp = document.getElementById('btn-jp');
 const searchInput = document.getElementById('search-input');
 
-// Initial Setup
+// Tab Logic
+let currentTab = 'talk'; // 'talk', 'guide', 'calc', 'saved'
+
+window.switchTab = (tab) => {
+    currentTab = tab;
+    
+    // Update Nav UI
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    // Simple way to find index, or assume order
+    const navIndex = { 'talk': 0, 'guide': 1, 'calc': 2, 'saved': 3 }[tab];
+    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+
+    // View Management
+    const contentArea = document.getElementById('content-area');
+    const calcView = document.getElementById('view-calc');
+    const catList = document.getElementById('category-list');
+    
+    // Reset View State
+    document.body.classList.remove('hide-cat-nav');
+    contentArea.style.display = 'block';
+    calcView.style.display = 'none';
+
+    if (tab === 'talk') {
+        // Show Categories, Show Phrases
+        // Restore category if it was hijacked by other tabs
+        if (currentCategory === 'favorites' || currentCategory === 'guide') {
+            currentCategory = 'basic'; // Reset to basic
+            renderCategories();
+        }
+        updatePhrases();
+    } else if (tab === 'guide') {
+        // Hide Categories (optional, or show specific ones), Show Guide
+        document.body.classList.add('hide-cat-nav');
+        currentCategory = 'guide'; // Virtual category
+        renderGuide();
+    } else if (tab === 'calc') {
+        // Hide Main Content, Show Calculator
+        document.body.classList.add('hide-cat-nav');
+        contentArea.style.display = 'none';
+        calcView.style.display = 'block';
+    } else if (tab === 'saved') {
+        // Hide Categories (or show Saved only), Show Favorites
+        document.body.classList.add('hide-cat-nav');
+        
+        // Show Favorites
+        let allPhrases = [];
+        Object.values(appData.phrases).forEach(list => allPhrases.push(...list));
+        currentPhrases = allPhrases.filter(p => favorites.includes(p.ko));
+        currentPhrases = [...new Map(currentPhrases.map(item => [item['ko'], item])).values()];
+        
+        renderPhrasesList();
+    }
+};
+
+// Initial setup tweak
 function init() {
     loadFavorites();
-    renderCategories();
-    updatePhrases(); // Initial Load
+    renderCategories(); // Prepare basic cats
+    
+    // Default Tab
+    switchTab('talk');
+    
     registerServiceWorker();
 
-    // Search Event Listener
+    // Search Event (Kept same)
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase().trim();
             if (keyword) {
-                // Deactivate category buttons visually when searching
-                document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+                 if(currentTab !== 'talk' && currentTab !== 'saved') switchTab('talk'); // Force switch to talk on search
                 searchPhrases(keyword);
             } else {
-                setCategory(currentCategory);
+                switchTab(currentTab);
             }
         });
     }
 }
+
+// Calculator Logic (Simplified for View)
+const EXCHANGE_RATE = 9.2; 
+const calcInput = document.getElementById('calc-input');
+if (calcInput) {
+    calcInput.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value) || 0;
+        const krw = Math.round(val * EXCHANGE_RATE);
+        document.getElementById('res-krw').innerText = krw.toLocaleString() + ' 원';
+        const taxFree = Math.round(val / 1.1);
+        document.getElementById('res-taxfree').innerText = taxFree.toLocaleString() + ' ¥';
+        
+        const alertBox = document.getElementById('tax-alert');
+        if (taxFree >= 5000) {
+            alertBox.classList.add('success');
+            alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
+        } else {
+            alertBox.classList.remove('success');
+            const diff = 5500 - val;
+            if (diff > 0) {
+                 alertBox.innerHTML = `면세 한도(5,500엔)까지 <br><strong>${diff.toLocaleString()}엔</strong> 남았습니다!`;
+            } else {
+                 alertBox.classList.add('success');
+                 alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
+            }
+        }
+    });
+}
+
+// Service Worker Registration
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', init);
 
 function loadFavorites() {
     try {
@@ -82,18 +183,15 @@ function isFavorite(phraseKo) {
 function renderCategories() {
     if (!categoryListEl) return;
     
-    // Favorites Tab
-    const favHtml = `
-        <li>
-            <button 
-                class="cat-btn fav-cat ${currentCategory === 'favorites' ? 'active' : ''}" 
-                onclick="setCategory('favorites')">
-                ⭐ 저장됨
-            </button>
-        </li>
-    `;
+    // Filter out Guide/Yatai/Ryokan if we want them ONLY in Guide tab? 
+    // Wait, User wanted specific phrases for Yatai/Ryokan. These are "Talk" categories.
+    // So Yatai/Ryokan should stay in Talk tab categories.
+    // 'Guide' (Map info) should be removed from here.
+    
+    // Remove 'guide' from category list for Talk tab
+    const talkCats = appData.categories.filter(c => c.id !== 'guide');
 
-    const catsHtml = appData.categories.map(cat => `
+    const catsHtml = talkCats.map(cat => `
         <li>
             <button 
                 class="cat-btn ${cat.id === currentCategory ? 'active' : ''}" 
@@ -103,7 +201,7 @@ function renderCategories() {
         </li>
     `).join('');
 
-    categoryListEl.innerHTML = favHtml + catsHtml;
+    categoryListEl.innerHTML = catsHtml;
 }
 
 function setCategory(categoryId) {

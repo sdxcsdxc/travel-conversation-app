@@ -54,6 +54,7 @@ window.switchTab = (tab) => {
     } else if (tab === 'saved') {
         // Hide Categories (or show Saved only), Show Favorites
         document.body.classList.add('hide-cat-nav');
+        currentCategory = 'favorites'; // Fix: Set virtual category for rendering check
         
         // Show Favorites
         let allPhrases = [];

@@ -921,8 +921,9 @@ function renderSchedule() {
     <div class="section-divider"></div>
     `;
     
-    return html;
-}
+
+
+
 
     return html;
 }

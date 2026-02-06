@@ -639,3 +639,57 @@ body.hide-cat-nav .category-nav {
     gap: 4px;
 }
 
+
+/* Guide Filters */
+.guide-filters {
+    display: flex;
+    gap: 8px;
+    padding: 10px 0 20px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 60px; /* Header height */
+    z-index: 90;
+    
+    /* Blurry background for sticky feel */
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+@media (prefers-color-scheme: dark) {
+    .guide-filters {
+        background: rgba(0, 0, 0, 0.8);
+    }
+}
+
+.guide-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--separator);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.filter-chip.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+    font-weight: 600;
+}
+
+.spot-type {
+    font-size: 0.8em;
+    margin-left: 4px;
+}

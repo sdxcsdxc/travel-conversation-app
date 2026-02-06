@@ -236,6 +236,9 @@ function updatePhrases() {
     renderPhrasesList();
 }
 
+// Guide Filter State
+let currentGuideFilter = 'all'; // 'all', 'shopping', 'food', 'cafe', 'sight'
+
 function renderGuide() {
     if (!contentAreaEl) return;
     
@@ -244,27 +247,74 @@ function renderGuide() {
         return;
     }
 
-    const html = appData.guides.map(area => `
+    // Filter Buttons HTML
+    const filters = [
+        { id: 'all', label: '전체' },
+        { id: 'shopping', label: '🛍️ 쇼핑' },
+        { id: 'food', label: '🍽️ 식당' },
+        { id: 'cafe', label: '☕ 카페' }, // Includes Dessert
+        { id: 'sight', label: '📷 명소' }
+    ];
+
+    const filterHtml = `
+        <div class="guide-filters">
+            ${filters.map(f => `
+                <button class="filter-chip ${currentGuideFilter === f.id ? 'active' : ''}" 
+                        onclick="setGuideFilter('${f.id}')">
+                    ${f.label}
+                </button>
+            `).join('')}
+        </div>
+    `;
+
+    // Render Logic
+    const listHtml = appData.guides.map(area => {
+        // Filter spots in this area
+        const filteredSpots = area.spots.filter(spot => {
+            if (currentGuideFilter === 'all') return true;
+            return spot.type === currentGuideFilter;
+        });
+
+        if (filteredSpots.length === 0) return ''; // Hide empty areas
+
+        return `
         <div class="guide-card">
             <div class="guide-area-title">${area.area}</div>
             <div class="spot-list">
-                ${area.spots.map(spot => `
+                ${filteredSpots.map(spot => `
                     <div class="spot-item">
                         <div class="spot-info">
-                            <h4>${spot.name}</h4>
+                            <h4>${spot.name} <span class="spot-type">${getSpotTypeEmoji(spot.type)}</span></h4>
                             <p>${spot.desc}</p>
                         </div>
                         <a href="${spot.map}" target="_blank" class="btn-map">
-                            📍 지도
+                            📍 구글맵
                         </a>
                     </div>
                 `).join('')}
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
     
-    contentAreaEl.innerHTML = html;
+    contentAreaEl.innerHTML = filterHtml + (listHtml || '<div class="empty-state">해당하는 장소가 없습니다.</div>');
 }
+
+function setGuideFilter(filter) {
+    currentGuideFilter = filter;
+    renderGuide();
+}
+
+function getSpotTypeEmoji(type) {
+    if (type === 'shopping') return '🛍️';
+    if (type === 'food') return '🍽️';
+    if (type === 'cafe') return '☕';
+    if (type === 'sight') return '📷';
+    return '';
+}
+
+// Ensure global access
+window.setGuideFilter = setGuideFilter;
 
 function searchPhrases(keyword) {
     // Search all categories

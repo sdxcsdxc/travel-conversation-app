@@ -839,17 +839,19 @@ body.hide-cat-nav .category-nav {
     color: var(--text-primary);
 }
 
-.input-group input, .input-group select {
+/* Shared Input Styles */
+.input-group input, .input-group select, 
+.add-hotel-form input, .budget-row input {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border-color); /* Changed from separator for better visibility */
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 8px;
     font-size: 1rem;
     background: var(--card-bg);
     color: var(--text-primary);
     outline: none;
-    appearance: none; /* Helpful for select */
+    appearance: none;
 }
 
 /* Add custom arrow for select */

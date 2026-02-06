@@ -1049,22 +1049,39 @@ body.hide-cat-nav .category-nav {
 .exp-info {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    margin-left: 12px;
 }
 
-.exp-desc {
+.exp-name {
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
-.exp-cat {
+.exp-date {
     font-size: 0.75rem;
     color: var(--text-tertiary);
+    margin-top: 2px;
 }
 
-.exp-amount {
+.exp-amount-box {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.exp-yen {
     font-size: 1rem;
     font-weight: 700;
     color: var(--text-primary);
+}
+
+.exp-krw {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-top: 2px;
 }
 
 .budget-progress-bar {

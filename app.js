@@ -877,7 +877,7 @@ function renderSchedule() {
                 const curTime = new Date(`2000-01-01T${item.time}`);
                 
                 // Simple check: If current time < prev time (sorted, so unlikely unless input error)
-                // Better check: prev time + duration vs current time
+                // If prev item has duration, check arrival time
                 if (prev.duration) {
                     const arrivalTime = new Date(prevTime.getTime() + prev.duration * 60000);
                     const diff = (curTime - arrivalTime) / 60000; // minutes
@@ -912,7 +912,8 @@ function renderSchedule() {
                     <button class="btn-text-del" onclick="deleteSchedule(${idx})">삭제</button>
                 </div>
             </div>
-        `}).join('');
+        `;
+        }).join('');
     }
 
     html += `
@@ -921,10 +922,6 @@ function renderSchedule() {
     <div class="section-divider"></div>
     `;
     
-
-
-
-
     return html;
 }
 

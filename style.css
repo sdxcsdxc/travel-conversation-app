@@ -962,3 +962,125 @@ body.hide-cat-nav .category-nav {
     font-size: 0.9rem;
     padding: 10px 0;
 }
+
+/* Budget V2 Styles (Restored) */
+.cat-chips {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.cat-chip {
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cat-chip.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.today-summary {
+    background: var(--card-bg);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.today-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.today-amt {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.expense-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-color);
+    padding: 12px 16px;
+    border-radius: 12px;
+}
+
+.exp-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.exp-icon {
+    font-size: 1.2rem;
+    width: 32px; height: 32px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.exp-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.exp-desc {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.exp-cat {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.exp-amount {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.budget-progress-bar {
+    height: 8px;
+    background: var(--separator);
+    border-radius: 4px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.budget-fill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.budget-fill.warning { background: #FF9500; }
+.budget-fill.danger { background: #FF3B30; }

@@ -1128,6 +1128,72 @@ body.hide-cat-nav .category-nav {
     border-color: var(--primary-color);
 }
 
+/* Budget UI Components (Added) */
+.budget-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.budget-row.total input {
+    width: 120px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-align: right;
+    font-weight: 600;
+}
+
+.budget-progress-bg {
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    margin: 12px 0;
+    overflow: hidden;
+}
+
+.budget-progress-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.toggle-group {
+    display: flex;
+    background: #e9ecef;
+    padding: 2px;
+    border-radius: 8px;
+    gap: 2px;
+}
+
+.btn-toggle {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-toggle.active {
+    background: white;
+    color: var(--text-primary);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.expense-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 6px;
+}
+
 .today-summary {
     background: var(--card-bg);
     padding: 16px;
@@ -1218,21 +1284,6 @@ body.hide-cat-nav .category-nav {
     font-size: 0.75rem;
     color: var(--text-tertiary);
     margin-top: 2px;
-}
-
-.budget-progress-bar {
-    height: 8px;
-    background: var(--separator);
-    border-radius: 4px;
-    margin-top: 12px;
-    overflow: hidden;
-}
-
-.budget-fill {
-    height: 100%;
-    background: var(--primary-color);
-    border-radius: 4px;
-    transition: width 0.3s ease;
 }
 
 .budget-fill.warning { background: #FF9500; }

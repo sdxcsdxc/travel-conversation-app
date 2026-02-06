@@ -99,19 +99,33 @@ function init() {
 // Wallet (Calculator + Budget) Logic
 const EXCHANGE_RATE = 9.2; 
 
+// Global Wallet State
+let walletFilter = 'all'; // 'all' or 'today'
+let selectedCategory = 'food'; // default cat
+
 function renderWallet() {
     const viewCalc = document.getElementById('view-calc');
     if (!viewCalc) return;
 
     // Budget Data
     const totalBudget = parseInt(localStorage.getItem('travel_budget_total') || '0');
-    const expenses = JSON.parse(localStorage.getItem('travel_expenses') || '[]');
+    let expenses = JSON.parse(localStorage.getItem('travel_expenses') || '[]');
     
+    // Filter Logic
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayExpenses = expenses.filter(e => e.date.slice(0, 10) === todayStr);
+    
+    // Display Logic based on filter
+    const displayExpenses = walletFilter === 'today' ? todayExpenses : expenses;
+    
+    // Calculations
     const totalSpent = expenses.reduce((acc, cur) => acc + parseInt(cur.amount), 0);
+    const todaySpent = todayExpenses.reduce((acc, cur) => acc + parseInt(cur.amount), 0);
     const remaining = totalBudget - totalSpent;
     const percent = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
     const barColor = percent > 90 ? '#FF3B30' : (percent > 70 ? '#FF9500' : '#34C759');
 
+    // UI HTML
     viewCalc.innerHTML = `
     <div class="calc-container">
         <!-- Section 1: Tax Free Calculator -->
@@ -138,7 +152,26 @@ function renderWallet() {
 
         <div class="section-divider"></div>
 
-        <!-- Section 2: Travel Budget -->
+        <!-- Section 2: Input Generator -->
+        <h3>🔢 만능 숫자 말하기</h3>
+        <p class="tool-desc">숫자만 입력하면 일본어로 말해줘요!</p>
+        
+        <div class="gen-tabs">
+            <button class="gen-tab active" onclick="setGenMode('people', this)">3명 👨‍👩‍👧</button>
+            <button class="gen-tab" onclick="setGenMode('time', this)">7시 ⏰</button>
+            <button class="gen-tab" onclick="setGenMode('price', this)">얼마 💴</button>
+            <button class="gen-tab" onclick="setGenMode('count', this)">2개 🍺</button>
+        </div>
+
+        <div class="input-group gen-input-box">
+            <input type="number" id="num-gen-input" placeholder="인원 수 (숫자)" inputmode="decimal">
+            <button class="btn-save-hotel" onclick="generateNumPhrase(currentGenMode)">변환</button>
+        </div>
+        <div id="num-gen-result"></div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 3: Budget V2 -->
         <h3>💴 여행 가계부</h3>
         
         <div class="budget-summary-card">
@@ -154,28 +187,76 @@ function renderWallet() {
                 <span style="color: ${barColor}">지출: ¥${totalSpent.toLocaleString()}</span>
                 <span>잔액: ¥${remaining.toLocaleString()}</span>
             </div>
+            <div class="budget-row today-sum">
+                <span>📅 오늘 쓴 돈:</span>
+                <span>¥${todaySpent.toLocaleString()}</span>
+            </div>
         </div>
 
         <div class="add-expense-form">
+            <div class="cat-chips">
+                <button class="cat-chip ${selectedCategory === 'food' ? 'active' : ''}" onclick="setExpCat('food')">🍽️ 식비</button>
+                <button class="cat-chip ${selectedCategory === 'trans' ? 'active' : ''}" onclick="setExpCat('trans')">🚌 교통</button>
+                <button class="cat-chip ${selectedCategory === 'shop' ? 'active' : ''}" onclick="setExpCat('shop')">🛍️ 쇼핑</button>
+                <button class="cat-chip ${selectedCategory === 'stay' ? 'active' : ''}" onclick="setExpCat('stay')">🏠 숙소</button>
+                <button class="cat-chip ${selectedCategory === 'etc' ? 'active' : ''}" onclick="setExpCat('etc')">🎸 기타</button>
+            </div>
             <div class="input-group row">
-                <input type="text" id="exp-item" placeholder="내용 (예: 편의점)" style="width: 55%;">
+                <input type="text" id="exp-item" placeholder="내용 (편의점 등)" style="width: 55%;">
                 <input type="number" id="exp-amount" placeholder="금액 (¥)" inputmode="numeric" style="width: 43%;">
             </div>
-            <button class="btn-save-hotel" onclick="addExpense()">지출 추가</button>
+            <button class="btn-save-hotel" onclick="addExpense()">+ 지출 등록</button>
+        </div>
+
+        <div class="expense-header">
+            <h4>지출 내역</h4>
+            <div class="toggle-group">
+                <button class="btn-toggle ${walletFilter === 'all' ? 'active' : ''}" onclick="setWalletFilter('all')">전체</button>
+                <button class="btn-toggle ${walletFilter === 'today' ? 'active' : ''}" onclick="setWalletFilter('today')">오늘</button>
+            </div>
         </div>
 
         <div class="expense-list">
-            ${expenses.length === 0 ? '<div class="empty-schedule">지출 내역이 없습니다.</div>' : ''}
-            ${expenses.map((ex, idx) => `
+            ${displayExpenses.length === 0 ? '<div class="empty-schedule">내역이 없습니다.</div>' : ''}
+            ${displayExpenses.map((ex, idx) => {
+                // Find original index if filtered
+                const originalIdx = expenses.indexOf(ex); 
+                return `
                 <div class="expense-item">
-                    <span class="exp-name">${ex.item}</span>
-                    <span class="exp-amount">-¥${parseInt(ex.amount).toLocaleString()}</span>
-                    <button class="btn-text-del" onclick="deleteExpense(${idx})">×</button>
+                    <div class="exp-icon">${getCatIcon(ex.category)}</div>
+                    <div class="exp-info">
+                        <div class="exp-name">${ex.item}</div>
+                        <div class="exp-date">${ex.date.slice(5, 10)} ${ex.date.slice(11, 16)}</div>
+                    </div>
+                    <div class="exp-amount-box">
+                        <div class="exp-yen">-¥${parseInt(ex.amount).toLocaleString()}</div>
+                        <div class="exp-krw">약 ${Math.round(ex.amount * EXCHANGE_RATE).toLocaleString()}원</div>
+                    </div>
+                    <button class="btn-text-del" onclick="deleteExpense(${originalIdx})">×</button>
                 </div>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
     </div>
     `;
+}
+
+window.setExpCat = (cat) => {
+    selectedCategory = cat;
+    renderWallet();
+};
+
+window.setWalletFilter = (filter) => {
+    walletFilter = filter;
+    renderWallet();
+};
+
+function getCatIcon(cat) {
+    if(cat === 'food') return '🍽️';
+    if(cat === 'trans') return '🚌';
+    if(cat === 'shop') return '🛍️';
+    if(cat === 'stay') return '🏠';
+    return '🎸';
 }
 
 // Calculator Logic
@@ -219,7 +300,13 @@ window.addExpense = () => {
     }
 
     const expenses = JSON.parse(localStorage.getItem('travel_expenses') || '[]');
-    expenses.unshift({ item, amount, date: new Date().toISOString() }); // Newest first
+    // Add Category
+    expenses.unshift({ 
+        item, 
+        amount, 
+        category: selectedCategory, 
+        date: new Date().toISOString() 
+    }); 
     localStorage.setItem('travel_expenses', JSON.stringify(expenses));
     renderWallet();
 };
@@ -231,7 +318,124 @@ window.deleteExpense = (index) => {
     renderWallet();
 };
 
-// Service Worker Registration
+// --- Japanese Number Logic ---
+const JP_NUMS = {
+    0: { k: '영', p: '제로' },
+    1: { k: '일', p: '이치' },
+    2: { k: '이', p: '니' },
+    3: { k: '삼', p: '산' },
+    4: { k: '사', p: '욘' },
+    5: { k: '오', p: '고' },
+    6: { k: '육', p: '로쿠' },
+    7: { k: '칠', p: '나나' },
+    8: { k: '팔', p: '하치' },
+    9: { k: '구', p: '큐' },
+    10: { k: '십', p: '쥬' },
+    100: { k: '백', p: '햐쿠' },
+    1000: { k: '천', p: '센' },
+    10000: { k: '만', p: '만' }
+};
+
+function getJpNumber(num) {
+    if (num <= 10) return JP_NUMS[num].p;
+    if (num < 100) {
+        const ten = Math.floor(num / 10);
+        const one = num % 10;
+        let str = (ten > 1 ? JP_NUMS[ten].p : '') + '쥬';
+        if (one > 0) str += JP_NUMS[one].p;
+        return str;
+    }
+    if (num < 1000) {
+        const hun = Math.floor(num / 100);
+        const rem = num % 100;
+        let str = (hun > 1 ? JP_NUMS[hun].p : '') + '햐쿠';
+        if (hun === 3) str = '산뱌쿠'; 
+        if (hun === 6) str = '롯뱌쿠';
+        if (hun === 8) str = '핫뱌쿠';
+        if (rem > 0) str += getJpNumber(rem);
+        return str;
+    }
+    if (num < 10000) {
+        const thou = Math.floor(num / 1000);
+        const rem = num % 1000;
+        let str = (thou > 1 ? JP_NUMS[thou].p : '') + '센';
+        if (thou === 3) str = '산젠';
+        if (thou === 8) str = '핫센';
+        if (rem > 0) str += getJpNumber(rem);
+        return str;
+    }
+    if (num < 100000000) { // Up to 100 million
+        const man = Math.floor(num / 10000);
+        const rem = num % 10000;
+        let str = getJpNumber(man) + '만';
+        if (rem > 0) str += getJpNumber(rem);
+        return str;
+    }
+    return num; // Too big fallback
+}
+
+window.generateNumPhrase = (type) => {
+    const input = document.getElementById('num-gen-input').value;
+    if (!input) return;
+    
+    let result = { ko: '', jp: '', pr: '' };
+    const num = parseInt(input.replace(/[^0-9]/g, ''));
+
+    if (type === 'people') {
+        result.ko = `${num}명입니다.`;
+        result.jp = `${num}名です。`;
+        // Human counter exceptions
+        if (num === 1) result.pr = '히토리 데스';
+        else if (num === 2) result.pr = '후타리 데스';
+        else result.pr = getJpNumber(num) + '닌 데스';
+    } else if (type === 'time') {
+        const [h, m] = input.split(':').map(Number);
+        if (!h && h !== 0) return;
+        
+        result.ko = `${h}시${m?' '+m+'분':''}에 예약했습니다.`;
+        result.jp = `${h}時${m?m+'分':''}に予約しました。`;
+        
+        // Hour exceptions
+        let hourPr = getJpNumber(h);
+        if (h === 4) hourPr = '요';
+        if (h === 7) hourPr = '시치';
+        if (h === 9) hourPr = '쿠';
+        hourPr += '지';
+        
+        let minPr = '';
+        if (m) {
+             minPr = getJpNumber(m) + '훈';
+             if ([1,3,4,6,8,10].includes(m%10)) minPr = minPr.replace('훈', '분'); // Simplification
+             // Detailed minute handling is complex, defaulting simple for now
+        }
+        
+        result.pr = `${hourPr} ${minPr}니 요야쿠 시마시타`;
+    } else if (type === 'price') {
+        result.ko = `${num.toLocaleString()}엔입니다.`;
+        result.jp = `${num.toLocaleString()}円です。`;
+        result.pr = getJpNumber(num) + '엔 데스';
+    } else if (type === 'count') {
+        result.ko = `${num}개 주세요.`;
+        result.jp = `${num}つください。`;
+        // Generic counter ~tsu exceptions
+        const tsu = ['히토츠','후타츠','밋츠','욧츠','이츠츠','뭇츠','나나츠','얏츠','코코노츠','토오'];
+        if (num <= 10) result.pr = tsu[num-1] + ' 쿠다사이';
+        else result.pr = getJpNumber(num) + '코 쿠다사이'; // fallback to 'ko'
+    }
+
+    // Render Result
+    const resBox = document.getElementById('num-gen-result');
+    resBox.innerHTML = `
+        <div class="phrase-card highlight">
+            <div class="phrase-content">
+                <div class="phrase-ko">${result.ko}</div>
+                <div class="phrase-pronunciation">${result.pr}</div>
+                <div class="phrase-target">${result.jp}</div>
+            </div>
+            <button class="speak-btn main-action" onclick="speak('${result.jp}', 'jp')">🔊 말하기</button>
+        </div>
+    `;
+};
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -372,6 +576,13 @@ function renderGuide() {
 
     const filterHtml = `
         <div class="guide-filters">
+            <!-- Checklist Buttons -->
+            <div class="checklist-btns">
+                <button class="btn-check-guide" onclick="openChecklist('onsen')">♨️ 온천 매너</button>
+                <button class="btn-check-guide" onclick="openChecklist('ryokan')">👘 료칸 체크</button>
+                <button class="btn-check-guide" onclick="openChecklist('yatai')">🍜 야타이 팁</button>
+            </div>
+            
             ${filters.map(f => `
                 <button class="filter-chip ${currentGuideFilter === f.id ? 'active' : ''}" 
                         onclick="setGuideFilter('${f.id}')">
@@ -431,6 +642,102 @@ function getSpotTypeEmoji(type) {
 // Ensure global access
 window.setGuideFilter = setGuideFilter;
 
+// --- Checklist Logic (New) ---
+const CHECKLIST_DATA = {
+    'onsen': {
+        title: '♨️ 온천/목욕탕 매너',
+        items: [
+            '탕에 들어가기 전 샤워하셨나요?',
+            '수건을 탕 안에 넣지 마세요 (머리 위에)',
+            '머리카락이 탕에 닿지 않게 묶으셨나요?',
+            '탈의실 가기 전 물기를 닦으셨나요?',
+            '문신이 있다면 미리 확인하셨나요?'
+        ]
+    },
+    'ryokan': {
+        title: '👘 료칸/숙소 체크',
+        items: [
+            '체크인 시간(보통 15~18시) 지키셨나요?',
+            '유카타 왼쪽 옷깃이 위로 가게 입으셨나요?',
+            '저녁 식사(가이세키) 시간 늦지 않기',
+            '현관에서 신발은 돌려서 정리하기',
+            '송영 버스 예약 시간 확인하기'
+        ]
+    },
+    'yatai': {
+        title: '🍜 야타이(포장마차) 팁',
+        items: [
+            '화장실은 미리 다녀오셨나요? (근처 없음)',
+            '현금(특히 1000엔권) 준비하셨나요?',
+            '1인 1메뉴 주문은 필수입니다',
+            '큰 짐은 호텔에 두고 오셨나요?',
+            '너무 오래 자리 차지하지 않기 (회전율)'
+        ]
+    }
+};
+
+window.openChecklist = (type) => {
+    const data = CHECKLIST_DATA[type];
+    if (!data) return;
+
+    const savedChecks = JSON.parse(localStorage.getItem('travel_checklist') || '{}');
+    const checkedList = savedChecks[type] || [];
+
+    const listHtml = data.items.map((item, idx) => {
+        const isChecked = checkedList.includes(idx);
+        return `
+        <div class="check-item ${isChecked ? 'checked' : ''}" onclick="toggleCheck('${type}', ${idx}, this)">
+            <span class="check-box">${isChecked ? '✅' : '⬜'}</span>
+            <span class="check-text">${item}</span>
+        </div>
+        `;
+    }).join('');
+
+    const html = `
+    <div class="checklist-modal">
+        <div class="checklist-header">
+            <h3>${data.title}</h3>
+            <button class="btn-close-check" onclick="closeChecklist()">✕</button>
+        </div>
+        <div class="checklist-body">
+            ${listHtml}
+        </div>
+    </div>
+    <div class="checklist-overlay" onclick="closeChecklist()"></div>
+    `;
+
+    // Append to body
+    const div = document.createElement('div');
+    div.id = 'checklist-container';
+    div.innerHTML = html;
+    document.body.appendChild(div);
+};
+
+window.closeChecklist = () => {
+    const el = document.getElementById('checklist-container');
+    if (el) el.remove();
+};
+
+window.toggleCheck = (type, idx, el) => {
+    const savedChecks = JSON.parse(localStorage.getItem('travel_checklist') || '{}');
+    if (!savedChecks[type]) savedChecks[type] = [];
+
+    const arr = savedChecks[type];
+    const pos = arr.indexOf(idx);
+
+    if (pos === -1) {
+        arr.push(idx); // Add
+        el.classList.add('checked');
+        el.querySelector('.check-box').innerText = '✅';
+    } else {
+        arr.splice(pos, 1); // Remove
+        el.classList.remove('checked');
+        el.querySelector('.check-box').innerText = '⬜';
+    }
+
+    localStorage.setItem('travel_checklist', JSON.stringify(savedChecks));
+};
+
 function searchPhrases(keyword) {
     // Search all categories
     let results = [];
@@ -446,98 +753,166 @@ function searchPhrases(keyword) {
     renderPhrasesList();
 }
 
-// Hotel Card Logic
+// Hotel Card Logic (Multi-Hotel Support)
 function renderHotelCard() {
-    const hotel = JSON.parse(localStorage.getItem('travel_hotel') || 'null');
+    let hotels = JSON.parse(localStorage.getItem('travel_hotel') || 'null');
     
-    if (!hotel) {
-        return `
-        <div class="hotel-card empty">
-            <h3>🏠 우리 숙소 등록</h3>
-            <p>숙소 정보를 등록해두면 택시나 길 찾기 때 편해요!</p>
-            <div class="input-group">
-                <input type="text" id="hotel-name" placeholder="숙소 이름 (예: 힐튼 후쿠오카)">
-                <input type="text" id="hotel-addr" placeholder="일본어 주소 (구글맵 복사 붙여넣기)">
-                <button class="btn-save-hotel" onclick="saveHotelInfo()">저장하기</button>
-            </div>
-        </div>
-        `;
+    // Migration: Convert old single object to array
+    if (hotels && !Array.isArray(hotels)) {
+        hotels = [hotels];
+        localStorage.setItem('travel_hotel', JSON.stringify(hotels));
     }
+    
+    if (!hotels) hotels = [];
 
-    return `
-    <div class="hotel-card saved">
+    let html = `
+    <div class="hotel-card saved-section">
         <div class="hotel-header">
-            <h3>🏠 우리 숙소</h3>
-            <button class="btn-edit" onclick="deleteHotelInfo()">수정</button>
+            <h3>🏠 숙소 목록 (${hotels.length})</h3>
         </div>
-        <div class="hotel-content">
-            <div class="hotel-name">${hotel.name}</div>
-            <div class="hotel-addr-ko">기사님, 여기로 가주세요 👇</div>
-            <div class="hotel-addr-jp">${hotel.addr}</div>
+        
+        ${hotels.length === 0 ? '<p class="empty-msg">기사님께 보여줄 숙소를 등록하세요.</p>' : ''}
+
+        <div class="hotel-list">
+            ${hotels.map((h, idx) => `
+            <div class="hotel-item">
+                <div class="hotel-info-row">
+                    <div class="hotel-name-badge">${h.name}</div>
+                    <button class="btn-text-del" onclick="deleteHotelInfo(${idx})">삭제</button>
+                </div>
+                <div class="hotel-addr-box">
+                    <div class="hotel-addr-ko">기사님, 여기로 가주세요 👇</div>
+                    <div class="hotel-addr-jp">${h.addr}</div>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.addr)}" 
+                   target="_blank" class="btn-hotel-map icon-btn">
+                    📍 지도 보기
+                </a>
+            </div>
+            `).join('')}
         </div>
-        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.addr)}" 
-           target="_blank" class="btn-hotel-map">
-            📍 구글지도 켜기
-        </a>
+
+        <div class="add-hotel-form">
+            <input type="text" id="hotel-name" placeholder="숙소 이름 (예: 1일차 료칸)">
+            <input type="text" id="hotel-addr" placeholder="일본어 주소 붙여넣기">
+            <button class="btn-save-hotel" onclick="saveHotelInfo()">+ 숙소 추가하기</button>
+        </div>
     </div>
     <div class="section-divider"></div>
     `;
+
+    return html;
 }
 
 window.saveHotelInfo = () => {
     const name = document.getElementById('hotel-name').value;
     const addr = document.getElementById('hotel-addr').value;
+    
     if (name && addr) {
-        localStorage.setItem('travel_hotel', JSON.stringify({ name, addr }));
-        switchTab('saved'); // Re-render
+        let hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
+        if (!Array.isArray(hotels)) hotels = [hotels]; // Safety check
+        
+        hotels.push({ name, addr });
+        localStorage.setItem('travel_hotel', JSON.stringify(hotels));
+        switchTab('saved'); 
     } else {
         alert('이름과 주소를 모두 입력해주세요!');
     }
 };
 
-window.deleteHotelInfo = () => {
-    if(confirm('숙소 정보를 수정(삭제)하시겠습니까?')) {
-        localStorage.removeItem('travel_hotel');
+window.deleteHotelInfo = (index) => {
+    if(confirm('이 숙소 정보를 삭제하시겠습니까?')) {
+        let hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
+        if (Array.isArray(hotels)) {
+            hotels.splice(index, 1);
+            localStorage.setItem('travel_hotel', JSON.stringify(hotels));
+        }
         switchTab('saved');
     }
 };
 
 
-// Schedule Logic
+
+// Schedule Logic (Logistics Enhanced)
 function renderSchedule() {
     const schedule = JSON.parse(localStorage.getItem('travel_schedule') || '[]');
     
-    // Add Form
+    // Sort by time
+    schedule.sort((a, b) => a.time.localeCompare(b.time));
+
+    // Input Form
     let html = `
     <div class="schedule-card saved">
         <div class="hotel-header">
-            <h3>🗓️ 나의 일정</h3>
+            <h3>🗓️ 나의 일정 & 이동</h3>
+        </div>
+        <div class="input-group row" style="margin-bottom:8px;">
+            <input type="time" id="sch-time" style="width: 30%;">
+            <input type="text" id="sch-place" placeholder="장소 (예: 텐진역)" style="width: 68%;">
         </div>
         <div class="input-group row">
-            <input type="text" id="sch-time" placeholder="시간 (10:00)" style="width: 35%;">
-            <input type="text" id="sch-place" placeholder="장소 (하카타역)" style="width: 63%;">
+             <select id="sch-trans" style="width: 40%;">
+                <option value="">이동수단</option>
+                <option value="walk">🚶 도보</option>
+                <option value="bus">🚌 버스</option>
+                <option value="subway">🚇 지하철</option>
+                <option value="taxi">🚕 택시</option>
+            </select>
+            <input type="number" id="sch-dur" placeholder="소요(분)" style="width: 25%;">
+            <button class="btn-save-hotel" onclick="addSchedule()" style="width: 30%; margin-top:0;">추가</button>
         </div>
-        <button class="btn-save-hotel" onclick="addSchedule()" style="margin-top: 8px;">일정 추가</button>
         
         <div class="schedule-list">
     `;
 
     if (schedule.length === 0) {
-        html += `<div class="empty-schedule">아직 등록된 일정이 없습니다.</div>`;
+        html += `<div class="empty-schedule">여행 일정을 등록해보세요!</div>`;
     } else {
-        html += schedule.map((item, idx) => `
+        html += schedule.map((item, idx) => {
+            // Logic Check: Previous item
+            let conflictMsg = '';
+            if (idx > 0) {
+                const prev = schedule[idx-1];
+                const prevTime = new Date(`2000-01-01T${prev.time}`);
+                const curTime = new Date(`2000-01-01T${item.time}`);
+                
+                // Simple check: If current time < prev time (sorted, so unlikely unless input error)
+                // Better check: prev time + duration vs current time
+                if (prev.duration) {
+                    const arrivalTime = new Date(prevTime.getTime() + prev.duration * 60000);
+                    const diff = (curTime - arrivalTime) / 60000; // minutes
+                    
+                    if (diff < 0) {
+                        conflictMsg = `<div class="sch-alert">⚠️ 시간 부족! (${Math.abs(diff)}분 겹침)</div>`;
+                    } else if (diff < 15) {
+                        conflictMsg = `<div class="sch-warn">⚡ 빠듯함 (${diff}분 여유)</div>`;
+                    }
+                }
+            }
+
+            return `
             <div class="schedule-item">
-                <div class="sch-info">
-                    <span class="sch-time">${item.time}</span>
-                    <span class="sch-place">${item.place}</span>
+                <div class="sch-time-row">
+                    <span class="sch-time-badge">${item.time}</span>
+                    ${item.trans ? `<span class="sch-trans-badge">${getTransIcon(item.trans)} ${item.duration}분</span>` : ''}
                 </div>
-                <div class="sch-actions">
+                <div class="sch-place-name">${item.place}</div>
+                ${conflictMsg}
+                
+                <!-- Smart Actions -->
+                <div class="quick-actions">
+                    <button class="btn-action-chip" onclick="smartAction('taxi', '${item.place}')">🚕 택시</button>
+                    <button class="btn-action-chip" onclick="smartAction('ask', '${item.place}')">🚌 길묻기</button>
+                    <button class="btn-action-chip" onclick="smartAction('reserve', '${item.time}')">⏰ 예약확인</button>
+                </div>
+
+                <div class="sch-actions" style="margin-top:8px; border-top:1px dashed #eee; padding-top:4px;">
                     <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.place)}" 
-                       target="_blank" class="btn-sch-map">📍</a>
-                    <button class="btn-sch-del" onclick="deleteSchedule(${idx})">🗑️</button>
+                       target="_blank" class="btn-sch-map" style="font-size:0.8rem; text-decoration:none;">📍 지도 보기</a>
+                    <button class="btn-text-del" onclick="deleteSchedule(${idx})">삭제</button>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
 
     html += `
@@ -549,17 +924,61 @@ function renderSchedule() {
     return html;
 }
 
+    return html;
+}
+
+window.smartAction = (type, val) => {
+    let ko, jp, pr;
+    if (type === 'taxi') {
+        ko = '기사님, 여기로 가주세요.';
+        jp = 'すみません、ここまで行ってください。';
+        pr = '스미마센, 코코마데 잇테 쿠다사이';
+        // Open Google Maps search for visual confirmation
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(val)}`, '_blank');
+    } else if (type === 'ask') {
+        ko = '죄송한데, 여기(사진/지도)는 어떻게 가나요?';
+        jp = 'すみません、ここへはどう行けばいいですか？';
+        pr = '스미마센, 코코에와 도- 이케바 이이데스카?';
+    } else if (type === 'reserve') {
+        ko = `${val}에 예약했습니다.`;
+        jp = `${val}に予約しました。`;
+        pr = `${val}니 요야쿠 시마시타`;
+    }
+
+    // Show Overlay
+    if (document.getElementById('overlay-ko')) {
+        document.getElementById('overlay-ko').innerText = ko;
+        document.getElementById('overlay-pron').innerText = pr;
+        document.getElementById('overlay-target').innerText = jp;
+        document.getElementById('overlay').classList.add('active');
+    }
+    currentOverlayText = jp;
+    
+    // Auto speak
+    speak(jp, 'jp');
+};
+
+function getTransIcon(t) {
+    if(t === 'walk') return '🚶';
+    if(t === 'bus') return '🚌';
+    if(t === 'subway') return '🚇';
+    if(t === 'taxi') return '🚕';
+    return '🚀';
+}
+
 window.addSchedule = () => {
     const time = document.getElementById('sch-time').value;
     const place = document.getElementById('sch-place').value;
+    const trans = document.getElementById('sch-trans').value;
+    const duration = parseInt(document.getElementById('sch-dur').value) || 0;
     
-    if (!place) {
-        alert('장소를 입력해주세요!');
+    if (!time || !place) {
+        alert('시간과 장소를 입력해주세요!');
         return;
     }
 
     const schedule = JSON.parse(localStorage.getItem('travel_schedule') || '[]');
-    schedule.push({ time, place });
+    schedule.push({ time, place, trans, duration });
     localStorage.setItem('travel_schedule', JSON.stringify(schedule));
     switchTab('saved');
 };

@@ -572,79 +572,120 @@ window.deleteSchedule = (index) => {
 };
 
 // Hotel Card Logic (Multi-Hotel Support)
-function renderHotelCard() {
-    let hotels = JSON.parse(localStorage.getItem('travel_hotel') || 'null');
-    
-    // Migration: Convert old single object to array
-    if (hotels && !Array.isArray(hotels)) {
-        hotels = [hotels];
-        localStorage.setItem('travel_hotel', JSON.stringify(hotels));
+
+// Render Phrases List
+function renderPhrasesList(prependHtml = '') {
+    if (!contentAreaEl) return;
+
+    if (currentCategory === 'guide') return; 
+
+    let html = prependHtml; // Start with prepended HTML (Hotel Card)
+
+    if (!currentPhrases || currentPhrases.length === 0) {
+        if (currentCategory === 'favorites') {
+            html += '<div class="empty-state">아직 저장된 문장이 없습니다.<br>원하는 문장의 별(☆)을 눌러 담아보세요.</div>';
+        } else if (!prependHtml) {
+             html += '<div class="empty-state">검색 결과가 없습니다.</div>';
+        }
+        contentAreaEl.innerHTML = html;
+        return;
     }
-    
-    if (!hotels) hotels = [];
 
-    let html = `
-    <div class="hotel-card saved-section">
-        <div class="hotel-header">
-            <h3>🏠 숙소 목록 (${hotels.length})</h3>
-        </div>
-        
-        ${hotels.length === 0 ? '<p class="empty-msg">기사님께 보여줄 숙소를 등록하세요.</p>' : ''}
+    html += currentPhrases.map((phrase, index) => {
+        const targetText = phrase[currentLang];
+        const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
+        const isFav = isFavorite(phrase.ko);
 
-        <div class="hotel-list">
-            ${hotels.map((h, idx) => `
-            <div class="hotel-item">
-                <div class="hotel-info-row">
-                    <div class="hotel-name-badge">${h.name}</div>
-                    <button class="btn-text-del" onclick="deleteHotelInfo(${idx})">삭제</button>
-                </div>
-                <div class="hotel-addr-box">
-                    <div class="hotel-addr-ko">기사님, 여기로 가주세요 👇</div>
-                    <div class="hotel-addr-jp">${h.addr}</div>
-                </div>
-                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.addr)}" 
-                   target="_blank" class="btn-hotel-map icon-btn">
-                    📍 지도 보기
-                </a>
+        return `
+        <div class="phrase-card" onclick="openOverlay(${index})">
+            <div class="phrase-content">
+                <div class="phrase-ko">${phrase.ko}</div>
+                ${pronunciation ? `<div class="phrase-pronunciation">${pronunciation}</div>` : ''}
+                <div class="phrase-target">${targetText}</div>
             </div>
-            `).join('')}
+            
+            <div class="card-actions">
+                <button class="fav-btn ${isFav ? 'active' : ''}" 
+                        onclick="event.stopPropagation(); toggleFavorite('${phrase.ko}')">
+                    ${isFav ? '★' : '☆'}
+                </button>
+                <button class="speak-btn" 
+                        onclick="event.stopPropagation(); speak('${targetText.replace(/'/g, "\\'")}', '${currentLang}')" 
+                        aria-label="Listen">
+                    🔊
+                </button>
+            </div>
         </div>
+        `;
+    }).join('');
 
-        <div class="add-hotel-form">
-            <input type="text" id="hotel-name" placeholder="숙소 이름 (예: 1일차 료칸)">
-            <input type="text" id="hotel-addr" placeholder="일본어 주소 붙여넣기">
-            <button class="btn-save-hotel" onclick="saveHotelInfo()">+ 숙소 추가하기</button>
-        </div>
-    </div>
-    <div class="section-divider"></div>
-    `;
-
-    return html;
+    contentAreaEl.innerHTML = html;
 }
 
-window.saveHotelInfo = () => {
-    const name = document.getElementById('hotel-name').value;
-    const addr = document.getElementById('hotel-addr').value;
-    
-    if (name && addr) {
-        let hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
-        if (!Array.isArray(hotels)) hotels = [hotels]; // Safety check
-        
-        hotels.push({ name, addr });
-        localStorage.setItem('travel_hotel', JSON.stringify(hotels));
-        switchTab('saved'); 
+// Global actions exposed to window for inline onclicks
+window.setCategory = setCategory;
+window.toggleFavorite = toggleFavorite;
+
+window.setLanguage = (lang) => {
+    currentLang = lang;
+    if (lang === 'en') {
+        btnEn.classList.add('active');
+        btnJp.classList.remove('active');
     } else {
-        alert('이름과 주소를 모두 입력해주세요!');
+        btnEn.classList.remove('active');
+        btnJp.classList.add('active');
+    }
+    
+    // Refresh list, keeping Hotel Card if in Saved tab
+    if (currentTab === 'saved') {
+         // Re-run switchTab logic properly or just re-render list with hotel card?
+         // Easiest is to call switchTab('saved') to fully re-render
+         switchTab('saved');
+    } else {
+        renderPhrasesList();
     }
 };
 
-window.deleteHotelInfo = (index) => {
-    if(confirm('이 숙소 정보를 삭제하시겠습니까?')) {
-        let hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
-        if (Array.isArray(hotels)) {
-            hotels.splice(index, 1);
-            localStorage.setItem('travel_hotel', JSON.stringify(hotels));
-        }
-        switchTab('saved');
-    }
+// Overlay Logic
+let currentOverlayText = '';
+
+window.openOverlay = (index) => {
+    const phrase = currentPhrases[index]; 
+    if (!phrase) return; // Guard clause
+
+    const targetText = phrase[currentLang];
+    const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
+
+    // Set Content
+    document.getElementById('overlay-ko').innerText = phrase.ko;
+    document.getElementById('overlay-pron').innerText = pronunciation || '';
+    document.getElementById('overlay-target').innerText = targetText;
+
+    // Show
+    document.getElementById('overlay').classList.add('active');
+    
+    currentOverlayText = targetText; 
 };
+
+window.closeOverlay = () => {
+    document.getElementById('overlay').classList.remove('active');
+    window.speechSynthesis.cancel();
+};
+
+window.replayAudio = () => {
+    if(currentOverlayText) speak(currentOverlayText, currentLang);
+};
+
+// TTS
+window.speak = (text, lang) => {
+    if (!window.speechSynthesis) {
+        alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
+        return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === 'en' ? 'en-US' : 'ja-JP';
+    utterance.rate = 0.9; 
+    window.speechSynthesis.speak(utterance);
+};
+

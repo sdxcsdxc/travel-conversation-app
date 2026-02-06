@@ -395,6 +395,75 @@ window.deleteHotelInfo = () => {
 };
 
 
+// Schedule Logic
+function renderSchedule() {
+    const schedule = JSON.parse(localStorage.getItem('travel_schedule') || '[]');
+    
+    // Add Form
+    let html = `
+    <div class="schedule-card saved">
+        <div class="hotel-header">
+            <h3>🗓️ 나의 일정</h3>
+        </div>
+        <div class="input-group row">
+            <input type="text" id="sch-time" placeholder="시간 (10:00)" style="width: 35%;">
+            <input type="text" id="sch-place" placeholder="장소 (하카타역)" style="width: 63%;">
+        </div>
+        <button class="btn-save-hotel" onclick="addSchedule()" style="margin-top: 8px;">일정 추가</button>
+        
+        <div class="schedule-list">
+    `;
+
+    if (schedule.length === 0) {
+        html += `<div class="empty-schedule">아직 등록된 일정이 없습니다.</div>`;
+    } else {
+        html += schedule.map((item, idx) => `
+            <div class="schedule-item">
+                <div class="sch-info">
+                    <span class="sch-time">${item.time}</span>
+                    <span class="sch-place">${item.place}</span>
+                </div>
+                <div class="sch-actions">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.place)}" 
+                       target="_blank" class="btn-sch-map">📍</a>
+                    <button class="btn-sch-del" onclick="deleteSchedule(${idx})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    html += `
+        </div>
+    </div>
+    <div class="section-divider"></div>
+    `;
+    
+    return html;
+}
+
+window.addSchedule = () => {
+    const time = document.getElementById('sch-time').value;
+    const place = document.getElementById('sch-place').value;
+    
+    if (!place) {
+        alert('장소를 입력해주세요!');
+        return;
+    }
+
+    const schedule = JSON.parse(localStorage.getItem('travel_schedule') || '[]');
+    schedule.push({ time, place });
+    localStorage.setItem('travel_schedule', JSON.stringify(schedule));
+    switchTab('saved');
+};
+
+window.deleteSchedule = (index) => {
+    const schedule = JSON.parse(localStorage.getItem('travel_schedule') || '[]');
+    schedule.splice(index, 1);
+    localStorage.setItem('travel_schedule', JSON.stringify(schedule));
+    switchTab('saved');
+};
+
+
 function renderPhrasesList(prependHtml = '') {
     if (!contentAreaEl) return;
 

@@ -13,6 +13,7 @@
     --text-tertiary: #C7C7CC;
     
     --separator: rgba(60, 60, 67, 0.1); /* Transparent separator */
+    --border-color: rgba(60, 60, 67, 0.29); /* Visible border for inputs */
     
     /* Dimensions */
     --header-height: 60px;
@@ -836,15 +837,33 @@ body.hide-cat-nav .category-nav {
     color: var(--text-primary);
 }
 
-.input-group input {
+.input-group input, .input-group select {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--separator);
+    border: 1px solid var(--border-color); /* Changed from separator for better visibility */
     border-radius: 8px;
     margin-bottom: 8px;
     font-size: 1rem;
     background: var(--card-bg);
     color: var(--text-primary);
+    outline: none;
+    appearance: none; /* Helpful for select */
+}
+
+/* Add custom arrow for select */
+.input-group select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+.add-expense-form {
+    background: var(--bg-color);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
 }
 
 .btn-save-hotel {
@@ -963,28 +982,35 @@ body.hide-cat-nav .category-nav {
     padding: 10px 0;
 }
 
+.add-hotel-form {
+    background: var(--bg-color);
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
 /* Checklist Styles (New) */
+/* guide-filters is the scroll container. 
+   We use display: contents on the wrapper so buttons participate in the scrolling row directly. */
 .checklist-btns {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    overflow-x: auto;
-    padding-bottom: 4px;
+    display: contents; 
 }
 
 .btn-check-guide {
-    padding: 6px 12px;
-    border-radius: 16px;
+    padding: 8px 14px; /* Matches filter chip size */
+    border-radius: 20px;
     border: none;
     background: #FF9500;
     color: white;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
     white-space: nowrap;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
     flex-shrink: 0;
+    margin-right: 8px; /* Gap logic */
 }
+
 
 .checklist-modal {
     position: fixed;

@@ -152,23 +152,6 @@ function renderWallet() {
 
         <div class="section-divider"></div>
 
-        <!-- Section 2: Input Generator -->
-        <h3>🔢 만능 숫자 말하기</h3>
-        <p class="tool-desc">숫자만 입력하면 일본어로 말해줘요!</p>
-        
-        <div class="gen-tabs">
-            <button class="gen-tab active" onclick="setGenMode('people', this)">3명 👨‍👩‍👧</button>
-            <button class="gen-tab" onclick="setGenMode('time', this)">7시 ⏰</button>
-            <button class="gen-tab" onclick="setGenMode('price', this)">얼마 💴</button>
-            <button class="gen-tab" onclick="setGenMode('count', this)">2개 🍺</button>
-        </div>
-
-        <div class="input-group gen-input-box">
-            <input type="number" id="num-gen-input" placeholder="인원 수 (숫자)" inputmode="decimal">
-            <button class="btn-save-hotel" onclick="generateNumPhrase(currentGenMode)">변환</button>
-        </div>
-        <div id="num-gen-result"></div>
-
         <div class="section-divider"></div>
 
         <!-- Section 3: Budget V2 -->
@@ -318,124 +301,7 @@ window.deleteExpense = (index) => {
     renderWallet();
 };
 
-// --- Japanese Number Logic ---
-const JP_NUMS = {
-    0: { k: '영', p: '제로' },
-    1: { k: '일', p: '이치' },
-    2: { k: '이', p: '니' },
-    3: { k: '삼', p: '산' },
-    4: { k: '사', p: '욘' },
-    5: { k: '오', p: '고' },
-    6: { k: '육', p: '로쿠' },
-    7: { k: '칠', p: '나나' },
-    8: { k: '팔', p: '하치' },
-    9: { k: '구', p: '큐' },
-    10: { k: '십', p: '쥬' },
-    100: { k: '백', p: '햐쿠' },
-    1000: { k: '천', p: '센' },
-    10000: { k: '만', p: '만' }
-};
 
-function getJpNumber(num) {
-    if (num <= 10) return JP_NUMS[num].p;
-    if (num < 100) {
-        const ten = Math.floor(num / 10);
-        const one = num % 10;
-        let str = (ten > 1 ? JP_NUMS[ten].p : '') + '쥬';
-        if (one > 0) str += JP_NUMS[one].p;
-        return str;
-    }
-    if (num < 1000) {
-        const hun = Math.floor(num / 100);
-        const rem = num % 100;
-        let str = (hun > 1 ? JP_NUMS[hun].p : '') + '햐쿠';
-        if (hun === 3) str = '산뱌쿠'; 
-        if (hun === 6) str = '롯뱌쿠';
-        if (hun === 8) str = '핫뱌쿠';
-        if (rem > 0) str += getJpNumber(rem);
-        return str;
-    }
-    if (num < 10000) {
-        const thou = Math.floor(num / 1000);
-        const rem = num % 1000;
-        let str = (thou > 1 ? JP_NUMS[thou].p : '') + '센';
-        if (thou === 3) str = '산젠';
-        if (thou === 8) str = '핫센';
-        if (rem > 0) str += getJpNumber(rem);
-        return str;
-    }
-    if (num < 100000000) { // Up to 100 million
-        const man = Math.floor(num / 10000);
-        const rem = num % 10000;
-        let str = getJpNumber(man) + '만';
-        if (rem > 0) str += getJpNumber(rem);
-        return str;
-    }
-    return num; // Too big fallback
-}
-
-window.generateNumPhrase = (type) => {
-    const input = document.getElementById('num-gen-input').value;
-    if (!input) return;
-    
-    let result = { ko: '', jp: '', pr: '' };
-    const num = parseInt(input.replace(/[^0-9]/g, ''));
-
-    if (type === 'people') {
-        result.ko = `${num}명입니다.`;
-        result.jp = `${num}名です。`;
-        // Human counter exceptions
-        if (num === 1) result.pr = '히토리 데스';
-        else if (num === 2) result.pr = '후타리 데스';
-        else result.pr = getJpNumber(num) + '닌 데스';
-    } else if (type === 'time') {
-        const [h, m] = input.split(':').map(Number);
-        if (!h && h !== 0) return;
-        
-        result.ko = `${h}시${m?' '+m+'분':''}에 예약했습니다.`;
-        result.jp = `${h}時${m?m+'分':''}に予約しました。`;
-        
-        // Hour exceptions
-        let hourPr = getJpNumber(h);
-        if (h === 4) hourPr = '요';
-        if (h === 7) hourPr = '시치';
-        if (h === 9) hourPr = '쿠';
-        hourPr += '지';
-        
-        let minPr = '';
-        if (m) {
-             minPr = getJpNumber(m) + '훈';
-             if ([1,3,4,6,8,10].includes(m%10)) minPr = minPr.replace('훈', '분'); // Simplification
-             // Detailed minute handling is complex, defaulting simple for now
-        }
-        
-        result.pr = `${hourPr} ${minPr}니 요야쿠 시마시타`;
-    } else if (type === 'price') {
-        result.ko = `${num.toLocaleString()}엔입니다.`;
-        result.jp = `${num.toLocaleString()}円です。`;
-        result.pr = getJpNumber(num) + '엔 데스';
-    } else if (type === 'count') {
-        result.ko = `${num}개 주세요.`;
-        result.jp = `${num}つください。`;
-        // Generic counter ~tsu exceptions
-        const tsu = ['히토츠','후타츠','밋츠','욧츠','이츠츠','뭇츠','나나츠','얏츠','코코노츠','토오'];
-        if (num <= 10) result.pr = tsu[num-1] + ' 쿠다사이';
-        else result.pr = getJpNumber(num) + '코 쿠다사이'; // fallback to 'ko'
-    }
-
-    // Render Result
-    const resBox = document.getElementById('num-gen-result');
-    resBox.innerHTML = `
-        <div class="phrase-card highlight">
-            <div class="phrase-content">
-                <div class="phrase-ko">${result.ko}</div>
-                <div class="phrase-pronunciation">${result.pr}</div>
-                <div class="phrase-target">${result.jp}</div>
-            </div>
-            <button class="speak-btn main-action" onclick="speak('${result.jp}', 'jp')">🔊 말하기</button>
-        </div>
-    `;
-};
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

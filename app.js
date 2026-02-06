@@ -54,7 +54,11 @@ window.switchTab = (tab) => {
     } else if (tab === 'saved') {
         // Hide Categories (or show Saved only), Show Favorites
         document.body.classList.add('hide-cat-nav');
-        currentCategory = 'favorites'; // Fix: Set virtual category for rendering check
+        currentCategory = 'favorites'; 
+
+        // Render Hotel Card Section First
+        const hotelHtml = renderHotelCard();
+        const scheduleHtml = renderSchedule();
         
         // Show Favorites
         let allPhrases = [];
@@ -62,7 +66,8 @@ window.switchTab = (tab) => {
         currentPhrases = allPhrases.filter(p => favorites.includes(p.ko));
         currentPhrases = [...new Map(currentPhrases.map(item => [item['ko'], item])).values()];
         
-        renderPhrasesList();
+        // Combine Hotel Card + Schedule + Favorites List
+        renderPhrasesList(hotelHtml + scheduleHtml); 
     }
 };
 
@@ -253,7 +258,8 @@ function renderGuide() {
         { id: 'shopping', label: '🛍️ 쇼핑' },
         { id: 'food', label: '🍽️ 식당' },
         { id: 'cafe', label: '☕ 카페' }, // Includes Dessert
-        { id: 'sight', label: '📷 명소' }
+        { id: 'sight', label: '📷 명소' },
+        { id: 'transport', label: '🚍 교통' }
     ];
 
     const filterHtml = `
@@ -310,6 +316,7 @@ function getSpotTypeEmoji(type) {
     if (type === 'food') return '🍽️';
     if (type === 'cafe') return '☕';
     if (type === 'sight') return '📷';
+    if (type === 'transport') return '🚍';
     return '';
 }
 
@@ -331,21 +338,81 @@ function searchPhrases(keyword) {
     renderPhrasesList();
 }
 
-function renderPhrasesList() {
+// Hotel Card Logic
+function renderHotelCard() {
+    const hotel = JSON.parse(localStorage.getItem('travel_hotel') || 'null');
+    
+    if (!hotel) {
+        return `
+        <div class="hotel-card empty">
+            <h3>🏠 우리 숙소 등록</h3>
+            <p>숙소 정보를 등록해두면 택시나 길 찾기 때 편해요!</p>
+            <div class="input-group">
+                <input type="text" id="hotel-name" placeholder="숙소 이름 (예: 힐튼 후쿠오카)">
+                <input type="text" id="hotel-addr" placeholder="일본어 주소 (구글맵 복사 붙여넣기)">
+                <button class="btn-save-hotel" onclick="saveHotelInfo()">저장하기</button>
+            </div>
+        </div>
+        `;
+    }
+
+    return `
+    <div class="hotel-card saved">
+        <div class="hotel-header">
+            <h3>🏠 우리 숙소</h3>
+            <button class="btn-edit" onclick="deleteHotelInfo()">수정</button>
+        </div>
+        <div class="hotel-content">
+            <div class="hotel-name">${hotel.name}</div>
+            <div class="hotel-addr-ko">기사님, 여기로 가주세요 👇</div>
+            <div class="hotel-addr-jp">${hotel.addr}</div>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.addr)}" 
+           target="_blank" class="btn-hotel-map">
+            📍 구글지도 켜기
+        </a>
+    </div>
+    <div class="section-divider"></div>
+    `;
+}
+
+window.saveHotelInfo = () => {
+    const name = document.getElementById('hotel-name').value;
+    const addr = document.getElementById('hotel-addr').value;
+    if (name && addr) {
+        localStorage.setItem('travel_hotel', JSON.stringify({ name, addr }));
+        switchTab('saved'); // Re-render
+    } else {
+        alert('이름과 주소를 모두 입력해주세요!');
+    }
+};
+
+window.deleteHotelInfo = () => {
+    if(confirm('숙소 정보를 수정(삭제)하시겠습니까?')) {
+        localStorage.removeItem('travel_hotel');
+        switchTab('saved');
+    }
+};
+
+
+function renderPhrasesList(prependHtml = '') {
     if (!contentAreaEl) return;
 
-    if (currentCategory === 'guide') return; // Should be handled by renderGuide
+    if (currentCategory === 'guide') return; 
+
+    let html = prependHtml; // Start with prepended HTML (Hotel Card)
 
     if (!currentPhrases || currentPhrases.length === 0) {
         if (currentCategory === 'favorites') {
-            contentAreaEl.innerHTML = '<div class="empty-state">아직 저장된 문장이 없습니다.<br>원하는 문장의 별(☆)을 눌러 담아보세요.</div>';
-        } else {
-            contentAreaEl.innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>';
+            html += '<div class="empty-state">아직 저장된 문장이 없습니다.<br>원하는 문장의 별(☆)을 눌러 담아보세요.</div>';
+        } else if (!prependHtml) {
+             html += '<div class="empty-state">검색 결과가 없습니다.</div>';
         }
+        contentAreaEl.innerHTML = html;
         return;
     }
 
-    contentAreaEl.innerHTML = currentPhrases.map((phrase, index) => {
+    html += currentPhrases.map((phrase, index) => {
         const targetText = phrase[currentLang];
         const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
         const isFav = isFavorite(phrase.ko);
@@ -372,6 +439,8 @@ function renderPhrasesList() {
         </div>
         `;
     }).join('');
+
+    contentAreaEl.innerHTML = html;
 }
 
 // Global actions exposed to window for inline onclicks
@@ -387,7 +456,15 @@ window.setLanguage = (lang) => {
         btnEn.classList.remove('active');
         btnJp.classList.add('active');
     }
-    renderPhrasesList();
+    
+    // Refresh list, keeping Hotel Card if in Saved tab
+    if (currentTab === 'saved') {
+         // Re-run switchTab logic properly or just re-render list with hotel card?
+         // Easiest is to call switchTab('saved') to fully re-render
+         switchTab('saved');
+    } else {
+        renderPhrasesList();
+    }
 };
 
 // Overlay Logic

@@ -90,6 +90,9 @@ const appData = {
         {
             area: '유후인 & 근교 (Suburbs)',
             spots: [
+                { name: '하카타 버스터미널 (3층)', desc: '유후인행 버스 타는 곳 (3F 34번)', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Hakata+Bus+Terminal' },
+                { name: '유후인 버스센터', desc: '하차 장소 & 돌아가는 버스 매표소', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Yufuin+Station+Bus+Center' },
+                { name: '산큐패스/버스 예약 (Web)', desc: '하이웨이 버스 예약 사이트 (Link)', type: 'transport', map: 'https://www.highwaybus.com/gp/foreign/index' },
                 { name: '킨린코 호수', desc: '유후인 명소', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Kinrinko+Lake' },
                 { name: 'Palm Beach', desc: '이토시마 해변 카페 (4.7)', type: 'cafe', map: 'https://www.google.com/maps/search/?api=1&query=Palm+Beach+Itoshima' },
                 { name: '후타미가우라 해안', desc: '부부바위, 흰 도리이 (4.4)', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Futamigaura' },

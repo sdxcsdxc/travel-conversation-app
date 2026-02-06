@@ -51,6 +51,7 @@ window.switchTab = (tab) => {
         document.body.classList.add('hide-cat-nav');
         contentArea.style.display = 'none';
         calcView.style.display = 'block';
+        renderWallet(); // Dynamic Render
     } else if (tab === 'saved') {
         // Hide Categories (or show Saved only), Show Favorites
         document.body.classList.add('hide-cat-nav');
@@ -81,7 +82,7 @@ function init() {
     
     registerServiceWorker();
 
-    // Search Event (Kept same)
+    // Search Event
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase().trim();
@@ -95,33 +96,140 @@ function init() {
     }
 }
 
-// Calculator Logic (Simplified for View)
+// Wallet (Calculator + Budget) Logic
 const EXCHANGE_RATE = 9.2; 
-const calcInput = document.getElementById('calc-input');
-if (calcInput) {
-    calcInput.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value) || 0;
-        const krw = Math.round(val * EXCHANGE_RATE);
-        document.getElementById('res-krw').innerText = krw.toLocaleString() + ' 원';
-        const taxFree = Math.round(val / 1.1);
-        document.getElementById('res-taxfree').innerText = taxFree.toLocaleString() + ' ¥';
+
+function renderWallet() {
+    const viewCalc = document.getElementById('view-calc');
+    if (!viewCalc) return;
+
+    // Budget Data
+    const totalBudget = parseInt(localStorage.getItem('travel_budget_total') || '0');
+    const expenses = JSON.parse(localStorage.getItem('travel_expenses') || '[]');
+    
+    const totalSpent = expenses.reduce((acc, cur) => acc + parseInt(cur.amount), 0);
+    const remaining = totalBudget - totalSpent;
+    const percent = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
+    const barColor = percent > 90 ? '#FF3B30' : (percent > 70 ? '#FF9500' : '#34C759');
+
+    viewCalc.innerHTML = `
+    <div class="calc-container">
+        <!-- Section 1: Tax Free Calculator -->
+        <h3 style="margin-top:0;">🛍️ 면세 계산기</h3>
+        <div class="input-group">
+            <label>가격 (엔화 ¥)</label>
+            <input type="number" id="calc-input" placeholder="0" inputmode="numeric" oninput="calculateTax(this)">
+        </div>
         
-        const alertBox = document.getElementById('tax-alert');
-        if (taxFree >= 5000) {
-            alertBox.classList.add('success');
-            alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
-        } else {
-            alertBox.classList.remove('success');
-            const diff = 5500 - val;
-            if (diff > 0) {
-                 alertBox.innerHTML = `면세 한도(5,500엔)까지 <br><strong>${diff.toLocaleString()}엔</strong> 남았습니다!`;
-            } else {
-                 alertBox.classList.add('success');
-                 alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
-            }
-        }
-    });
+        <div class="calc-result-box">
+            <div class="result-row">
+                <span>면세가 (10% OFF)</span>
+                <span id="res-taxfree">0 ¥</span>
+            </div>
+            <div class="result-row highlight">
+                <span>한국돈 (약)</span>
+                <span id="res-krw">0 원</span>
+            </div>
+        </div>
+        
+        <div id="tax-alert" class="tax-alert">
+            면세 한도(5,500엔)까지 <br><strong>5,500엔</strong> 남았습니다!
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 2: Travel Budget -->
+        <h3>💴 여행 가계부</h3>
+        
+        <div class="budget-summary-card">
+            <div class="budget-row total">
+                <span>총 예산 (¥)</span>
+                <input type="number" id="budget-total-input" value="${totalBudget > 0 ? totalBudget : ''}" 
+                       placeholder="예산 설정" onchange="saveBudget(this)">
+            </div>
+            <div class="budget-progress-bg">
+                <div class="budget-progress-fill" style="width: ${Math.min(percent, 100)}%; background: ${barColor};"></div>
+            </div>
+            <div class="budget-row status">
+                <span style="color: ${barColor}">지출: ¥${totalSpent.toLocaleString()}</span>
+                <span>잔액: ¥${remaining.toLocaleString()}</span>
+            </div>
+        </div>
+
+        <div class="add-expense-form">
+            <div class="input-group row">
+                <input type="text" id="exp-item" placeholder="내용 (예: 편의점)" style="width: 55%;">
+                <input type="number" id="exp-amount" placeholder="금액 (¥)" inputmode="numeric" style="width: 43%;">
+            </div>
+            <button class="btn-save-hotel" onclick="addExpense()">지출 추가</button>
+        </div>
+
+        <div class="expense-list">
+            ${expenses.length === 0 ? '<div class="empty-schedule">지출 내역이 없습니다.</div>' : ''}
+            ${expenses.map((ex, idx) => `
+                <div class="expense-item">
+                    <span class="exp-name">${ex.item}</span>
+                    <span class="exp-amount">-¥${parseInt(ex.amount).toLocaleString()}</span>
+                    <button class="btn-text-del" onclick="deleteExpense(${idx})">×</button>
+                </div>
+            `).join('')}
+        </div>
+    </div>
+    `;
 }
+
+// Calculator Logic
+window.calculateTax = (el) => {
+    const val = parseInt(el.value) || 0;
+    const krw = Math.round(val * EXCHANGE_RATE);
+    document.getElementById('res-krw').innerText = krw.toLocaleString() + ' 원';
+    const taxFree = Math.round(val / 1.1);
+    document.getElementById('res-taxfree').innerText = taxFree.toLocaleString() + ' ¥';
+    
+    const alertBox = document.getElementById('tax-alert');
+    if (taxFree >= 5000) {
+        alertBox.classList.add('success');
+        alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
+    } else {
+        alertBox.classList.remove('success');
+        const diff = 5500 - val;
+        if (diff > 0) {
+             alertBox.innerHTML = `면세 한도(5,500엔)까지 <br><strong>${diff.toLocaleString()}엔</strong> 남았습니다!`;
+        } else {
+             alertBox.classList.add('success');
+             alertBox.innerHTML = '면세 가능합니다! 🎉<br>여권 준비하세요.';
+        }
+    }
+};
+
+// Budget Logic
+window.saveBudget = (el) => {
+    const val = parseInt(el.value) || 0;
+    localStorage.setItem('travel_budget_total', val);
+    renderWallet(); // Refresh UI
+};
+
+window.addExpense = () => {
+    const item = document.getElementById('exp-item').value;
+    const amount = document.getElementById('exp-amount').value;
+    
+    if (!item || !amount) {
+        alert('내용과 금액을 입력해주세요.');
+        return;
+    }
+
+    const expenses = JSON.parse(localStorage.getItem('travel_expenses') || '[]');
+    expenses.unshift({ item, amount, date: new Date().toISOString() }); // Newest first
+    localStorage.setItem('travel_expenses', JSON.stringify(expenses));
+    renderWallet();
+};
+
+window.deleteExpense = (index) => {
+    const expenses = JSON.parse(localStorage.getItem('travel_expenses') || '[]');
+    expenses.splice(index, 1);
+    localStorage.setItem('travel_expenses', JSON.stringify(expenses));
+    renderWallet();
+};
 
 // Service Worker Registration
 function registerServiceWorker() {
@@ -463,137 +571,80 @@ window.deleteSchedule = (index) => {
     switchTab('saved');
 };
 
-
-function renderPhrasesList(prependHtml = '') {
-    if (!contentAreaEl) return;
-
-    if (currentCategory === 'guide') return; 
-
-    let html = prependHtml; // Start with prepended HTML (Hotel Card)
-
-    if (!currentPhrases || currentPhrases.length === 0) {
-        if (currentCategory === 'favorites') {
-            html += '<div class="empty-state">아직 저장된 문장이 없습니다.<br>원하는 문장의 별(☆)을 눌러 담아보세요.</div>';
-        } else if (!prependHtml) {
-             html += '<div class="empty-state">검색 결과가 없습니다.</div>';
-        }
-        contentAreaEl.innerHTML = html;
-        return;
+// Hotel Card Logic (Multi-Hotel Support)
+function renderHotelCard() {
+    let hotels = JSON.parse(localStorage.getItem('travel_hotel') || 'null');
+    
+    // Migration: Convert old single object to array
+    if (hotels && !Array.isArray(hotels)) {
+        hotels = [hotels];
+        localStorage.setItem('travel_hotel', JSON.stringify(hotels));
     }
+    
+    if (!hotels) hotels = [];
 
-    html += currentPhrases.map((phrase, index) => {
-        const targetText = phrase[currentLang];
-        const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
-        const isFav = isFavorite(phrase.ko);
-
-        return `
-        <div class="phrase-card" onclick="openOverlay(${index})">
-            <div class="phrase-content">
-                <div class="phrase-ko">${phrase.ko}</div>
-                ${pronunciation ? `<div class="phrase-pronunciation">${pronunciation}</div>` : ''}
-                <div class="phrase-target">${targetText}</div>
-            </div>
-            
-            <div class="card-actions">
-                <button class="fav-btn ${isFav ? 'active' : ''}" 
-                        onclick="event.stopPropagation(); toggleFavorite('${phrase.ko}')">
-                    ${isFav ? '★' : '☆'}
-                </button>
-                <button class="speak-btn" 
-                        onclick="event.stopPropagation(); speak('${targetText.replace(/'/g, "\\'")}', '${currentLang}')" 
-                        aria-label="Listen">
-                    🔊
-                </button>
-            </div>
+    let html = `
+    <div class="hotel-card saved-section">
+        <div class="hotel-header">
+            <h3>🏠 숙소 목록 (${hotels.length})</h3>
         </div>
-        `;
-    }).join('');
+        
+        ${hotels.length === 0 ? '<p class="empty-msg">기사님께 보여줄 숙소를 등록하세요.</p>' : ''}
 
-    contentAreaEl.innerHTML = html;
+        <div class="hotel-list">
+            ${hotels.map((h, idx) => `
+            <div class="hotel-item">
+                <div class="hotel-info-row">
+                    <div class="hotel-name-badge">${h.name}</div>
+                    <button class="btn-text-del" onclick="deleteHotelInfo(${idx})">삭제</button>
+                </div>
+                <div class="hotel-addr-box">
+                    <div class="hotel-addr-ko">기사님, 여기로 가주세요 👇</div>
+                    <div class="hotel-addr-jp">${h.addr}</div>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.addr)}" 
+                   target="_blank" class="btn-hotel-map icon-btn">
+                    📍 지도 보기
+                </a>
+            </div>
+            `).join('')}
+        </div>
+
+        <div class="add-hotel-form">
+            <input type="text" id="hotel-name" placeholder="숙소 이름 (예: 1일차 료칸)">
+            <input type="text" id="hotel-addr" placeholder="일본어 주소 붙여넣기">
+            <button class="btn-save-hotel" onclick="saveHotelInfo()">+ 숙소 추가하기</button>
+        </div>
+    </div>
+    <div class="section-divider"></div>
+    `;
+
+    return html;
 }
 
-// Global actions exposed to window for inline onclicks
-window.setCategory = setCategory;
-window.toggleFavorite = toggleFavorite;
-
-window.setLanguage = (lang) => {
-    currentLang = lang;
-    if (lang === 'en') {
-        btnEn.classList.add('active');
-        btnJp.classList.remove('active');
-    } else {
-        btnEn.classList.remove('active');
-        btnJp.classList.add('active');
-    }
+window.saveHotelInfo = () => {
+    const name = document.getElementById('hotel-name').value;
+    const addr = document.getElementById('hotel-addr').value;
     
-    // Refresh list, keeping Hotel Card if in Saved tab
-    if (currentTab === 'saved') {
-         // Re-run switchTab logic properly or just re-render list with hotel card?
-         // Easiest is to call switchTab('saved') to fully re-render
-         switchTab('saved');
+    if (name && addr) {
+        let hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
+        if (!Array.isArray(hotels)) hotels = [hotels]; // Safety check
+        
+        hotels.push({ name, addr });
+        localStorage.setItem('travel_hotel', JSON.stringify(hotels));
+        switchTab('saved'); 
     } else {
-        renderPhrasesList();
+        alert('이름과 주소를 모두 입력해주세요!');
     }
 };
 
-// Overlay Logic
-let currentOverlayText = '';
-
-window.openOverlay = (index) => {
-    const phrase = currentPhrases[index]; 
-    if (!phrase) return; // Guard clause
-
-    const targetText = phrase[currentLang];
-    const pronunciation = currentLang === 'en' ? phrase.pr_en : phrase.pr_jp;
-
-    // Set Content
-    document.getElementById('overlay-ko').innerText = phrase.ko;
-    document.getElementById('overlay-pron').innerText = pronunciation || '';
-    document.getElementById('overlay-target').innerText = targetText;
-
-    // Show
-    document.getElementById('overlay').classList.add('active');
-    
-    currentOverlayText = targetText; 
-};
-
-window.closeOverlay = () => {
-    document.getElementById('overlay').classList.remove('active');
-    window.speechSynthesis.cancel();
-};
-
-window.replayAudio = () => {
-    if(currentOverlayText) speak(currentOverlayText, currentLang);
-};
-
-// TTS
-window.speak = (text, lang) => {
-    if (!window.speechSynthesis) {
-        alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
-        return;
+window.deleteHotelInfo = (index) => {
+    if(confirm('이 숙소 정보를 삭제하시겠습니까?')) {
+        let hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
+        if (Array.isArray(hotels)) {
+            hotels.splice(index, 1);
+            localStorage.setItem('travel_hotel', JSON.stringify(hotels));
+        }
+        switchTab('saved');
     }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang === 'en' ? 'en-US' : 'ja-JP';
-    utterance.rate = 0.9; 
-    window.speechSynthesis.speak(utterance);
 };
-
-
-
-// Service Worker Registration
-function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(registration => {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', init);

@@ -722,9 +722,11 @@ body.hide-cat-nav .category-nav {
 /* Guide Filters */
 .guide-filters {
     display: flex;
+    flex-wrap: nowrap; /* Force single line */
     gap: 8px;
     padding: 10px 0 20px 0;
     overflow-x: auto;
+    white-space: nowrap; /* Prevent wrapping */
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     position: sticky;

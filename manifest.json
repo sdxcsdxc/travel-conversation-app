@@ -1,6 +1,6 @@
 {
-  "name": "후쿠오카 여행 메이트",
-  "short_name": "여행 메이트",
+  "name": "후쿠오카 여행 파우치",
+  "short_name": "여행 파우치",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

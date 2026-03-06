@@ -221,6 +221,7 @@ const appData = {
                 { name: '런던버스 카페', desc: '이토시마 포토존 (4.2)', type: 'cafe', map: 'https://www.google.com/maps/search/?api=1&query=London+Bus+Cafe+Itoshima' },
                 { name: '유후노 오야도 호타루', desc: '료칸 (4.5)', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru' }
             ]
+        },
         {
             area: '🚌 텐진 → 이토시마 버스 (West Coast Liner) ✅ 검증됨',
             spots: [

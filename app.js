@@ -4,27 +4,27 @@ let currentCategory = 'basic';
 let currentPhrases = [];
 let favorites = []; // Array of phrase IDs or objects. Storing phrase objects for simplicity in this no-backend setup.
 
-// DOM Elements
-const categoryListEl = document.getElementById('category-list');
-const contentAreaEl = document.getElementById('content-area');
-const btnEn = document.getElementById('btn-en');
-const btnJp = document.getElementById('btn-jp');
-const searchInput = document.getElementById('search-input');
+// DOM Elements (Initialized in init)
+let categoryListEl, contentAreaEl, btnEn, btnJp, searchInput;
 
 // Tab Logic
 let currentTab = 'talk'; // 'talk', 'guide', 'calc', 'saved'
 
 window.switchTab = (tab) => {
+    if (!tab) return;
     currentTab = tab;
     
     // Update Nav UI safely
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(btn => btn.classList.remove('active'));
+    const navItems = Array.from(document.querySelectorAll('.nav-item'));
+    navItems.forEach(btn => {
+        if (btn && btn.classList) btn.classList.remove('active');
+    });
     
     // Find button by onclick attribute to be index-independent
     navItems.forEach(btn => {
-        if (btn.getAttribute('onclick').includes(`'${tab}'`)) {
-            btn.classList.add('active');
+        const onclick = btn.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${tab}'`)) {
+            if (btn.classList) btn.classList.add('active');
         }
     });
 
@@ -59,6 +59,13 @@ window.switchTab = (tab) => {
 
 // Initial setup tweak
 function init() {
+    // Initialize DOM Elements
+    categoryListEl = document.getElementById('category-list');
+    contentAreaEl = document.getElementById('content-area');
+    btnEn = document.getElementById('btn-en');
+    btnJp = document.getElementById('btn-jp');
+    searchInput = document.getElementById('search-input');
+
     loadFavorites();
     renderCategories(); // Prepare basic cats
     
@@ -1005,11 +1012,11 @@ window.toggleFavorite = toggleFavorite;
 window.setLanguage = (lang) => {
     currentLang = lang;
     if (lang === 'en') {
-        btnEn.classList.add('active');
-        btnJp.classList.remove('active');
+        if (btnEn) btnEn.classList.add('active');
+        if (btnJp) btnJp.classList.remove('active');
     } else {
-        btnEn.classList.remove('active');
-        btnJp.classList.add('active');
+        if (btnEn) btnEn.classList.remove('active');
+        if (btnJp) btnJp.classList.add('active');
     }
     
     // Refresh list, keeping Hotel Card if in Saved tab

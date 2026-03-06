@@ -29,6 +29,16 @@ const appData = {
             map: 'https://www.google.com/maps/search/?api=1&query=Fukuoka+Airport+International+Terminal' 
         },
         { 
+            id: 'res-lunch-07', 
+            name: '🍣 스시 사카바 사시스 (원후쿠오카 빌딩점)', 
+            date: '2026-03-07', 
+            time: '13:00 (예상)', 
+            type: 'food', 
+            addr: 'Fukuoka, Chuo Ward, Tenjin, 1 Chome−11−1 One Fukuoka Building B1 (Tenjin Norengai)',
+            map: 'https://www.google.com/maps/search/?api=1&query=Sushi+Sakaba+Sashisu+One+Fukuoka+Building',
+            recommendations: ['🔥 참치 뱃살 김말이 (토로타쿠)', '🦐 호화 스시 모듬', '유후인 이동 전 든든한 점심 추천']
+        },
+        { 
             id: 'res-01', 
             name: '후쿠오카 야끼니꾸 니쿠마루', 
             date: '2026-03-07', 
@@ -70,12 +80,22 @@ const appData = {
         },
 
         { 
+            id: 'res-hotel-tenjin', 
+            name: '🏨 퀸테사 호텔 후쿠오카 텐진 (3박)', 
+            date: '2026-03-07', 
+            time: '15:00 (Check-in)', 
+            type: 'stay', 
+            addr: '3 Chome-2-10 Tenjin, Chuo Ward, Fukuoka, 810-0001 Japan',
+            map: 'https://www.google.com/maps/search/?api=1&query=Quintessa+Hotel+Fukuoka+Tenjin+Comic+Books',
+            recommendations: ['텐진역 도보 5분', '체크아웃: 3월 10일 오전']
+        },
+        { 
             id: 'res-bike-01', 
             name: '이토시마 전기자전거 렌탈', 
             date: '2026-03-10', 
             time: '오전 (예상)', 
             type: 'transport', 
-            addr: '2186-1 Shimanogita, Itoshima, Fukuoka 819-1303 Japap',
+            addr: '2186-1 Shimanogita, Itoshima, Fukuoka 819-1303 Japan',
             map: 'https://www.google.com/maps/search/?api=1&query=2186-1+Shimanogita+Itoshima+Fukuoka' 
         },
         { 
@@ -84,8 +104,9 @@ const appData = {
             date: '2026-03-10', 
             time: '15:00 (Check-in)', 
             type: 'stay', 
-            addr: 'Oita, Yufu, Yufuincho Kawakami, 1791-1',
-            map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru' 
+            addr: '〒879-5114 Oita, Yufu, 湯布院町川北１７９１−1 Japan',
+            map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru',
+            recommendations: ['체크아웃: 3월 11일 오전', '천연 온천 이용 가능']
         }
     ],
     categories: [

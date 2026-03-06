@@ -221,7 +221,7 @@ const appData = {
                 { name: '런던버스 카페', desc: '이토시마 포토존 (4.2)', type: 'cafe', map: 'https://www.google.com/maps/search/?api=1&query=London+Bus+Cafe+Itoshima' },
                 { name: '유후노 오야도 호타루', desc: '료칸 (4.5)', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru' }
             ]
-        },
+        {
             area: '🚌 텐진 → 이토시마 버스 (West Coast Liner) ✅ 검증됨',
             spots: [
                 { name: '📍 텐진 4초메/3초메 (승차)', desc: '[미나텐진] 앞 4초메 또는 [노스텐진] 앞 3초메 정류장에서 탑승. [웨스트코스트 라이너/이토시마호] 확인!', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Tenjin+4-chome+Bus+Stop' },

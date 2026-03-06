@@ -17,16 +17,20 @@ let currentTab = 'talk'; // 'talk', 'guide', 'calc', 'saved'
 window.switchTab = (tab) => {
     currentTab = tab;
     
-    // Update Nav UI
-    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    // Simple way to find index, or assume order
-    const navIndex = { 'talk': 0, 'guide': 1, 'calc': 2, 'saved': 3 }[tab];
-    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+    // Update Nav UI safely
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(btn => btn.classList.remove('active'));
+    
+    // Find button by onclick attribute to be index-independent
+    navItems.forEach(btn => {
+        if (btn.getAttribute('onclick').includes(`'${tab}'`)) {
+            btn.classList.add('active');
+        }
+    });
 
     // View Management
     const contentArea = document.getElementById('content-area');
     const calcView = document.getElementById('view-calc');
-    const catList = document.getElementById('category-list');
     
     // Reset View State
     document.body.classList.remove('hide-cat-nav');
@@ -34,25 +38,21 @@ window.switchTab = (tab) => {
     calcView.style.display = 'none';
 
     if (tab === 'talk') {
-        // Show Categories, Show Phrases
-        // Restore category if it was hijacked by other tabs
         if (currentCategory === 'favorites' || currentCategory === 'guide') {
-            currentCategory = 'basic'; // Reset to basic
+            currentCategory = 'basic'; 
             renderCategories();
         }
         updatePhrases();
     } else if (tab === 'guide') {
-        // Hide Categories (optional, or show specific ones), Show Guide
         document.body.classList.add('hide-cat-nav');
-        currentCategory = 'guide'; // Virtual category
+        currentCategory = 'guide';
         renderGuide();
     } else if (tab === 'calc') {
-        // Hide Main Content, Show Calculator
         document.body.classList.add('hide-cat-nav');
         contentArea.style.display = 'none';
         calcView.style.display = 'block';
-        renderWallet(); // Dynamic Render
-        // Render Unified Timeline Home
+        renderWallet();
+    } else if (tab === 'saved') {
         renderUnifiedTimeline();
     }
 };

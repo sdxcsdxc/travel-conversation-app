@@ -210,6 +210,15 @@ const appData = {
                 { name: '런던버스 카페', desc: '이토시마 포토존 (4.2)', type: 'cafe', map: 'https://www.google.com/maps/search/?api=1&query=London+Bus+Cafe+Itoshima' },
                 { name: '유후노 오야도 호타루', desc: '료칸 (4.5)', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru' }
             ]
+        },
+        {
+            area: 'IC 교통카드 가이드 (Transportation Card)',
+            spots: [
+                { name: '🚉 하야카켄', desc: '지하철역 발매기 구매 (보증금 500엔)', type: 'transport' },
+                { name: '🚌 니모카', desc: '공항 버스 카운터/터미널 구매 가능', type: 'transport' },
+                { name: '🏪 편의점 충전', desc: '계산대에서 "차지 오네가이시마스"', type: 'basic' },
+                { name: '💡 이용 팁', desc: 'Suica/Icoca 등 기존 카드도 충전해서 사용 가능', type: 'info' }
+            ]
         }
     ],
     phrases: {

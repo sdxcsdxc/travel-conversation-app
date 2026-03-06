@@ -718,7 +718,10 @@ function renderReservations() {
         <div class="res-list">
             ${sorted.map(res => `
             <div class="res-item ${res.type}">
-                <div class="res-date-badge">${res.date.slice(5)} (${res.time})</div>
+                <div class="res-header">
+                    <div class="res-date-badge">${res.date.slice(5)}</div>
+                    <div class="res-time-tag">${res.time}</div>
+                </div>
                 <div class="res-info">
                     <div class="res-name">${res.name}</div>
                     <div class="res-addr">${res.addr}</div>

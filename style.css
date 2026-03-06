@@ -1351,15 +1351,32 @@ body.hide-cat-nav .category-nav {
     border-left-color: #007AFF;
 }
 
+.res-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
 .res-date-badge {
     display: inline-block;
-    background: var(--bg-color);
+    background: #F2F2F7;
     color: var(--text-secondary);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     padding: 4px 10px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 700;
-    margin-bottom: 6px;
+}
+
+.res-time-tag {
+    display: inline-block;
+    background: var(--primary-gradient);
+    color: white;
+    font-size: 1rem;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 800;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .res-name {

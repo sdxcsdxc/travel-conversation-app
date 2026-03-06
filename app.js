@@ -773,6 +773,7 @@ function renderUnifiedTimeline() {
                         <div class="timeline-actions">
                             <a href="${item.map || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.addr)}`}" 
                                target="_blank" class="t-btn map">📍 지도</a>
+                            ${item.ticket ? `<a href="${item.ticket}" target="_blank" class="t-btn ticket-link">🎫 티켓</a>` : ''}
                             <button class="t-btn taxi" onclick="smartAction('taxi', '${item.name}')">🚕 택시</button>
                             <button class="t-btn ask" onclick="smartAction('ask', '${item.name}')">🚌 길찾기</button>
                         </div>

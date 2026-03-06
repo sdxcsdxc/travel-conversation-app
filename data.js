@@ -85,7 +85,19 @@ const appData = {
             type: 'transport', 
             addr: '텐진 고속버스터미널',
             map: 'https://www.google.com/maps/search/?api=1&query=Tenjin+Express+Bus+Terminal',
-            recommendations: ['터미널 3층에서 탑승', '유후인 에키마에 버스센터 도착']
+            ticket: 'https://www.highwaybus.com/gp/payment/payWebTicketFromMail?b470c93d93635635156b8d412e9480c3&ticket_type=mobile',
+            recommendations: ['터미널 3층에서 탑승', '유후인 에키마에 버스센터 도착', '🔗 모바일 티켓 확인 필수']
+        },
+        { 
+            id: 'bus-yuf-fuk', 
+            name: '🚍 고속버스 (유후인 -> 후쿠오카 공항)', 
+            date: '2026-03-11', 
+            time: '12:30 ~ 14:15', 
+            type: 'transport', 
+            addr: '유후인 버스센터',
+            map: 'https://www.google.com/maps/search/?api=1&query=Yufuin+Station+Bus+Center',
+            ticket: 'https://www.highwaybus.com/gp/payment/payWebTicketFromMail?afa962d30d1a20a1bacb88eca0eabdfd&ticket_type=mobile',
+            recommendations: ['유후인역 옆 버스센터 탑승', '후쿠오카공항 국제선 터미널 하차', '🔗 모바일 티켓 확인 필수']
         },
         { 
             id: 'res-hotel-tenjin', 
@@ -199,8 +211,8 @@ const appData = {
         {
             area: '유후인 & 근교 (Suburbs)',
             spots: [
-                { name: '하카타 버스터미널 (3층)', desc: '유후인행 버스 타는 곳 (3F 34번)', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Hakata+Bus+Terminal' },
-                { name: '유후인 버스센터', desc: '하차 장소 & 돌아가는 버스 매표소', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Yufuin+Station+Bus+Center' },
+                { name: '하카타 버스터미널 (3층)', desc: '유후인행 버스 타는 곳 (3F 34번 게이트). [예약 필수] ✅ 실측정보', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Hakata+Bus+Terminal' },
+                { name: '유후인 버스센터', desc: '하차 장소 & 돌아가는 버스 매표소 (유후인역 바로 옆)', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Yufuin+Station+Bus+Center' },
                 { name: '산큐패스/버스 예약 (Web)', desc: '하이웨이 버스 예약 사이트 (Link)', type: 'transport', map: 'https://www.highwaybus.com/gp/foreign/index' },
                 { name: '킨린코 호수', desc: '유후인 명소', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Kinrinko+Lake' },
                 { name: 'Palm Beach', desc: '이토시마 해변 카페 (4.7)', type: 'cafe', map: 'https://www.google.com/maps/search/?api=1&query=Palm+Beach+Itoshima' },
@@ -208,6 +220,15 @@ const appData = {
                 { name: '이토시마 noodle lab', desc: '이토시마 라멘 (4.5)', type: 'food', map: 'https://www.google.com/maps/search/?api=1&query=Itoshima+noodle+lab' },
                 { name: '런던버스 카페', desc: '이토시마 포토존 (4.2)', type: 'cafe', map: 'https://www.google.com/maps/search/?api=1&query=London+Bus+Cafe+Itoshima' },
                 { name: '유후노 오야도 호타루', desc: '료칸 (4.5)', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru' }
+            ]
+        },
+            area: '🚌 텐진 → 이토시마 버스 (West Coast Liner) ✅ 검증됨',
+            spots: [
+                { name: '📍 텐진 4초메/3초메 (승차)', desc: '[미나텐진] 앞 4초메 또는 [노스텐진] 앞 3초메 정류장에서 탑승. [웨스트코스트 라이너/이토시마호] 확인!', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=Tenjin+4-chome+Bus+Stop' },
+                { name: '🚲 자전거 대여소/탈리아 커피 (노기타)', desc: '[시마노기타(野北, Nogita)] 정류장 하차. 자전거 대여소와 인기가 많은 [탈리아 커피] 카페가 정류장 바로 앞입니다.', type: 'transport', map: 'https://www.google.com/maps/search/?api=1&query=THALIA+COFFEE+ROASTERS+Itoshima' },
+                { name: '⏰ 운행 시간표 Tip', desc: '평일/주말 운행 시간이 다르니 반드시 전날 <a href="https://showa-bus.jp/" target="_blank">공식홈</a> 체크 권장. (1시간 간격)', type: 'info' },
+                { name: '💱 요금 및 패스', desc: '현금 1,150엔. 산큐패스 가능. [마이루트] 앱의 이토시마 프리패스(1,800엔)가 가장 이득!', type: 'info' },
+                { name: '🌊 주요 관광지 하차', desc: '후타미가우라(부부바위) 또는 팜비치 카페 등도 이 노선으로 바로 이동 가능.', type: 'sight', map: 'https://www.google.com/maps/search/?api=1&query=Futamigaura+Itoshima' }
             ]
         },
         {

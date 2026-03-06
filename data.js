@@ -211,12 +211,13 @@ const appData = {
             ]
         },
         {
-            area: 'IC 교통카드 가이드 (Transportation Card)',
+            area: '💳 IC 교통카드 완전 정복 (IC Card Manual)',
             spots: [
-                { name: '🚉 하야카켄', desc: '지하철역 발매기 구매 (보증금 500엔) <a href="https://subway.city.fukuoka.lg.jp/hayakaken/" target="_blank" style="color:var(--primary-color); text-decoration:underline;">[공식 사이트]</a>', type: 'transport' },
-                { name: '🚌 니모카', desc: '공항 버스 카운터/터미널 구매 가능 <a href="https://www.nimoca.jp/" target="_blank" style="color:var(--primary-color); text-decoration:underline;">[공식 사이트]</a>', type: 'transport' },
-                { name: '🏪 편의점 충전', desc: '계산대에서 "차지 오네가이시마스"', type: 'basic' },
-                { name: '💡 이용 팁', desc: 'Suica/Icoca 등 기존 카드도 충전해서 사용 가능', type: 'info' }
+                { name: '1. 구매하기 (Purchase)', desc: '지하철역 노란색 발매기에서 [IC Card] 또는 [하야카켄] 버튼 클릭. 보증금 500엔 포함 (나중 반납 시 환불) <a href="https://subway.city.fukuoka.lg.jp/hayakaken/" target="_blank" style="color:var(--primary-color); text-decoration:underline;">[하야카켄 공식]</a>', type: 'transport' },
+                { name: '2. 충전하기 (Recharge)', desc: '역내 정산기 또는 세븐일레븐/패밀리마트 계산대에서 가능. "차지 오네가이시마스"라고 말하고 금액 지불', type: 'transport' },
+                { name: '3. 사용하기 (How to Use)', desc: '지하철 개찰구 또는 버스 승차/하차 시 단말기에 [띡!] 소리가 날 때까지 터치. (잔액 부족 시 기사님께 정산 가능)', type: 'transport' },
+                { name: '4. 종류 안내 (Types)', desc: '후쿠오카는 하야카켄/니모카/스고카가 주력이나, Suica/Icoca 등 기존 카드도 호환 사용 가능', type: 'info' },
+                { name: '💡 꿀팁', desc: '아이폰 유저는 지갑 앱에서 파스모/스이카를 즉시 발급 및 현대카드로 충전 가능!', type: 'info' }
             ]
         }
     ],

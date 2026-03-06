@@ -1477,6 +1477,17 @@ body.hide-cat-nav .category-nav {
     padding: 8px 0;
 }
 
+.day-tip {
+    font-size: 0.75rem;
+    background: #FF9500;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: auto;
+    cursor: pointer;
+    font-weight: 600;
+}
+
 .day-badge {
     background: #1a1a1a;
     color: #fff;

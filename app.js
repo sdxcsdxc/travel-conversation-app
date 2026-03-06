@@ -747,7 +747,6 @@ function renderUnifiedTimeline() {
             <p>오늘의 동선과 예약 내역을 확인하세요.</p>
         </div>
     `;
-
     Object.keys(grouped).sort().forEach((date, dayIdx) => {
         const items = grouped[date];
         const dayNum = dayIdx + 1;
@@ -758,6 +757,7 @@ function renderUnifiedTimeline() {
             <div class="timeline-day-header">
                 <span class="day-badge">Day ${dayNum}</span>
                 <span class="day-date">${displayDate}</span>
+                ${dayNum === 1 ? '<span class="day-tip" onclick="switchTab(\'guide\')">💳 IC카드 가이드 보기</span>' : ''}
             </div>
             <div class="timeline-items">
                 ${items.map(item => `
@@ -903,6 +903,8 @@ window.smartAction = (type, val) => {
         ko = '죄송한데, 여기(사진/지도)는 어떻게 가나요?';
         jp = 'すみません、ここへはどう行けばいいですか？';
         pr = '스미마센, 코코에와 도- 이케바 이이데스카?';
+        // Open Google Maps Directions
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(val)}`, '_blank');
     } else if (type === 'reserve') {
         ko = `${val}에 예약했습니다.`;
         jp = `${val}に予約しました。`;

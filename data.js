@@ -59,14 +59,23 @@ const appData = {
             recommendations: ['🐟 가다랑어 짚불구이 (Warayaki)', '🍣 고등어 봉초밥', '🍚 이쿠라 미니 덮밥', '🐄 와규 숯불구이']
         },
         { 
-            id: 'res-03', 
+            id: 'res-tetsuya', 
             name: 'YAKINIKU TETSUYA', 
             date: '2026-03-09', 
             time: '19:30', 
             type: 'food', 
-            addr: 'Fukuoka, Chuo Ward, Daimyo, 1 Chome-14-1',
+            addr: 'Fukuoka, Chuo Ward, Haruyoshi, 3 Chome−12−1 1F',
             map: 'https://www.google.com/maps/search/?api=1&query=Yakiniku+Tetsuya+Fukuoka',
-            recommendations: ['✨ 테츠야 특별 코스', '🍳 설로인 야키샤부 (계란 노른자)', '🥓 두툼한 우설 구이']
+            recommendations: ['🔥 테츠야 코스', '🐮 설로인 야키샤부', '규탕 (우설) 추천']
+        },
+        { 
+            id: 'res-bike-01', 
+            name: '이토시마 전기자전거 렌탈', 
+            date: '2026-03-09', 
+            time: '11:30 (도착 예정)', 
+            type: 'transport', 
+            addr: '2186-1 Shimanogita, Itoshima, Fukuoka 819-1303 Japan',
+            map: 'https://www.google.com/maps/search/?api=1&query=2186-1+Shimanogita+Itoshima+Fukuoka' 
         },
         { 
             id: 'bus-ten-yuf', 
@@ -78,7 +87,6 @@ const appData = {
             map: 'https://www.google.com/maps/search/?api=1&query=Tenjin+Express+Bus+Terminal',
             recommendations: ['터미널 3층에서 탑승', '유후인 에키마에 버스센터 도착']
         },
-
         { 
             id: 'res-hotel-tenjin', 
             name: '🏨 퀸테사 호텔 후쿠오카 텐진 (3박)', 
@@ -88,15 +96,6 @@ const appData = {
             addr: '3 Chome-2-10 Tenjin, Chuo Ward, Fukuoka, 810-0001 Japan',
             map: 'https://www.google.com/maps/search/?api=1&query=Quintessa+Hotel+Fukuoka+Tenjin+Comic+Books',
             recommendations: ['텐진역 도보 5분', '체크아웃: 3월 10일 오전']
-        },
-        { 
-            id: 'res-bike-01', 
-            name: '이토시마 전기자전거 렌탈', 
-            date: '2026-03-10', 
-            time: '오전 (예상)', 
-            type: 'transport', 
-            addr: '2186-1 Shimanogita, Itoshima, Fukuoka 819-1303 Japan',
-            map: 'https://www.google.com/maps/search/?api=1&query=2186-1+Shimanogita+Itoshima+Fukuoka' 
         },
         { 
             id: 'res-hotel-01', 
@@ -214,8 +213,8 @@ const appData = {
         {
             area: 'IC 교통카드 가이드 (Transportation Card)',
             spots: [
-                { name: '🚉 하야카켄', desc: '지하철역 발매기 구매 (보증금 500엔)', type: 'transport' },
-                { name: '🚌 니모카', desc: '공항 버스 카운터/터미널 구매 가능', type: 'transport' },
+                { name: '🚉 하야카켄', desc: '지하철역 발매기 구매 (보증금 500엔) <a href="https://subway.city.fukuoka.lg.jp/hayakaken/" target="_blank" style="color:var(--primary-color); text-decoration:underline;">[공식 사이트]</a>', type: 'transport' },
+                { name: '🚌 니모카', desc: '공항 버스 카운터/터미널 구매 가능 <a href="https://www.nimoca.jp/" target="_blank" style="color:var(--primary-color); text-decoration:underline;">[공식 사이트]</a>', type: 'transport' },
                 { name: '🏪 편의점 충전', desc: '계산대에서 "차지 오네가이시마스"', type: 'basic' },
                 { name: '💡 이용 팁', desc: 'Suica/Icoca 등 기존 카드도 충전해서 사용 가능', type: 'info' }
             ]

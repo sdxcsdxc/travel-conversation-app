@@ -1441,3 +1441,156 @@ body.hide-cat-nav .category-nav {
     border: 1px dashed #FFEBA0;
     line-height: 1.4;
 }
+
+/* Timeline UI */
+.timeline-container {
+    padding: 20px 16px;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.timeline-welcome h2 {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.timeline-welcome p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.timeline-day-group {
+    margin-bottom: 30px;
+}
+
+.timeline-day-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    position: sticky;
+    top: 60px;
+    background: #f8f9fa;
+    z-index: 10;
+    padding: 8px 0;
+}
+
+.day-badge {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.day-date {
+    font-weight: 600;
+    color: #333;
+}
+
+.timeline-items {
+    position: relative;
+    padding-left: 20px;
+    border-left: 2px dashed #ddd;
+    margin-left: 10px;
+}
+
+.timeline-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    position: relative;
+    border: 1px solid #eee;
+}
+
+.timeline-card::before {
+    content: '';
+    position: absolute;
+    left: -27px;
+    top: 24px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border: 2px solid #1a1a1a;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.timeline-time {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #007AFF;
+    margin-bottom: 8px;
+}
+
+.timeline-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+}
+
+.timeline-addr {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.timeline-tips {
+    background: #f0f7ff;
+    color: #007AFF;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+}
+
+.timeline-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.t-btn {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.1s;
+}
+
+.t-btn:active {
+    transform: scale(0.95);
+}
+
+.t-btn.map { background: #E8F2FF; color: #007AFF; }
+.t-btn.taxi { background: #FFF9E6; color: #FF9500; }
+.t-btn.ask { background: #F2F2F7; color: #1a1a1a; }
+
+.btn-add-timeline {
+    width: 100%;
+    padding: 16px;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 20px;
+}
+
+/* Category Colors */
+.timeline-card.flight { border-left: 5px solid #00D2FF; }
+.timeline-card.stay { border-left: 5px solid #FF3B30; }
+.timeline-card.food { border-left: 5px solid #FF9500; }
+.timeline-card.transport { border-left: 5px solid #34C759; }

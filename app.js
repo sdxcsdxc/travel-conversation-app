@@ -52,24 +52,8 @@ window.switchTab = (tab) => {
         contentArea.style.display = 'none';
         calcView.style.display = 'block';
         renderWallet(); // Dynamic Render
-    } else if (tab === 'saved') {
-        // Hide Categories (or show Saved only), Show Favorites
-        document.body.classList.add('hide-cat-nav');
-        currentCategory = 'favorites'; 
-
-        // Render Hotel Card Section First
-        const resHtml = renderReservations();
-        const hotelHtml = renderHotelCard();
-        const scheduleHtml = renderSchedule();
-        
-        // Show Favorites
-        let allPhrases = [];
-        Object.values(appData.phrases).forEach(list => allPhrases.push(...list));
-        currentPhrases = allPhrases.filter(p => favorites.includes(p.ko));
-        currentPhrases = [...new Map(currentPhrases.map(item => [item['ko'], item])).values()];
-        
-        // Combine Reservations + Hotel Card + Schedule + Favorites List
-        renderPhrasesList(resHtml + hotelHtml + scheduleHtml); 
+        // Render Unified Timeline Home
+        renderUnifiedTimeline();
     }
 };
 
@@ -79,7 +63,8 @@ function init() {
     renderCategories(); // Prepare basic cats
     
     // Default Tab
-    switchTab('talk');
+    // Default Tab: My Trip (Saved)
+    switchTab('saved');
     
     registerServiceWorker();
 
@@ -700,49 +685,112 @@ window.deleteHotelInfo = (index) => {
 
 
 
-// Reservations Logic
-function renderReservations() {
-    if (!appData.reservations || appData.reservations.length === 0) return '';
+// Unified Timeline Rendering (The new Home)
+function renderUnifiedTimeline() {
+    if (!contentAreaEl) return;
+    document.body.classList.add('hide-cat-nav');
+    
+    // 1. Collect Data
+    const reservations = appData.reservations || [];
+    const schedules = JSON.parse(localStorage.getItem('travel_schedule') || '[]');
+    const hotels = JSON.parse(localStorage.getItem('travel_hotel') || '[]');
 
-    // Sort by date and time
-    const sorted = [...appData.reservations].sort((a, b) => {
-        const dateDiff = a.date.localeCompare(b.date);
-        return dateDiff !== 0 ? dateDiff : a.time.localeCompare(b.time);
+    // 2. Normalize and Combine
+    let allEvents = [];
+    
+    // Hardcoded Reservations
+    reservations.forEach(r => {
+        allEvents.push({ ...r, source: 'res' });
     });
 
+    // Custom Schedules
+    schedules.forEach((s, idx) => {
+        allEvents.push({ 
+            id: `sch-${idx}`,
+            name: s.place,
+            date: '2026-03-07', // Default to start date if missing, ideally we should have date in schedule
+            time: s.time,
+            type: 'transport',
+            addr: s.place,
+            trans: s.trans,
+            duration: s.duration,
+            source: 'sch'
+        });
+    });
+
+    // 3. Sort by Date/Time
+    allEvents.sort((a, b) => {
+        const d = a.date.localeCompare(b.date);
+        if (d !== 0) return d;
+        return a.time.localeCompare(b.time);
+    });
+
+    // 4. Group by Date
+    const grouped = {};
+    allEvents.forEach(e => {
+        if (!grouped[e.date]) grouped[e.date] = [];
+        grouped[e.date].push(e);
+    });
+
+    // 5. Generate HTML
     let html = `
-    <div class="reservation-card saved-section">
-        <div class="hotel-header">
-            <h3>📍 확정된 예약 내역</h3>
+    <div class="timeline-container">
+        <div class="timeline-welcome">
+            <h2>📅 My Trip Timeline</h2>
+            <p>오늘의 동선과 예약 내역을 확인하세요.</p>
         </div>
-        <div class="res-list">
-            ${sorted.map(res => `
-            <div class="res-item ${res.type}">
-                <div class="res-header">
-                    <div class="res-date-badge">${res.date.slice(5)}</div>
-                    <div class="res-time-tag">${res.time}</div>
-                </div>
-                <div class="res-info">
-                    <div class="res-name">${res.name}</div>
-                    <div class="res-addr">${res.addr}</div>
-                    ${res.recommendations ? `
-                    <div class="res-menu-preview">
-                        🍴 추천: ${res.recommendations.join(', ')}
-                    </div>
-                    ` : ''}
-                </div>
-                <div class="res-actions">
-                    <a href="${res.map}" target="_blank" class="btn-res-map">📍 지도</a>
-                    <button class="btn-res-show" onclick="smartAction('reserve', '${res.time}')">⏰ 알림</button>
-                </div>
+    `;
+
+    Object.keys(grouped).sort().forEach((date, dayIdx) => {
+        const items = grouped[date];
+        const dayNum = dayIdx + 1;
+        const displayDate = date.slice(5).replace('-', '/');
+
+        html += `
+        <div class="timeline-day-group">
+            <div class="timeline-day-header">
+                <span class="day-badge">Day ${dayNum}</span>
+                <span class="day-date">${displayDate}</span>
             </div>
-            `).join('')}
+            <div class="timeline-items">
+                ${items.map(item => `
+                <div class="timeline-card ${item.type || 'info'}">
+                    <div class="timeline-time">${item.time}</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">
+                            ${(item.source === 'res' ? '📌 ' : '') + item.name}
+                        </div>
+                        <div class="timeline-addr">${item.addr}</div>
+                        ${item.recommendations ? `<div class="timeline-tips">${item.recommendations[0]}</div>` : ''}
+                        
+                        <div class="timeline-actions">
+                            <a href="${item.map || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.addr)}`}" 
+                               target="_blank" class="t-btn map">📍 지도</a>
+                            <button class="t-btn taxi" onclick="smartAction('taxi', '${item.name}')">🚕 택시</button>
+                            <button class="t-btn ask" onclick="smartAction('ask', '${item.name}')">🚌 길찾기</button>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
+        </div>
+        `;
+    });
+
+    // Add "Add Schedule" form at bottom
+    html += `
+        <div class="timeline-footer">
+            <button class="btn-add-timeline" onclick="switchTab('talk')">+ 현지 회화 더보기</button>
+            <div style="height: 100px;"></div>
         </div>
     </div>
-    <div class="section-divider"></div>
     `;
-    return html;
+
+    contentAreaEl.innerHTML = html;
 }
+
+// Keep old for backward compatibility but redirect or cleanup
+function renderReservations() { return ''; }
 
 // Schedule Logic (Logistics Enhanced)
 function renderSchedule() {

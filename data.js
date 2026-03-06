@@ -1,6 +1,34 @@
 const appData = {
     reservations: [
         { 
+            id: 'bus-6017', 
+            name: '🚌 신림역 공항버스 (6017번) 탑승', 
+            date: '2026-03-07', 
+            time: '05:00 ~ 05:10 (권장)', 
+            type: 'transport', 
+            addr: '신림역 8번 출구 정류장',
+            map: 'http://www.airportlimousine.co.kr/',
+            recommendations: ['🔗 공식 시간표: http://www.airportlimousine.co.kr/', '운행간격: 20~30분', '인천공항 T1까지 약 1시간 30분 소요', '요금: 17,000원', '공항 2시간 전 도착(06:40)을 위한 첫차급 시간대입니다.']
+        },
+        { 
+            id: 'flight-dep', 
+            name: '✈️ 후쿠오카 출행 (인천 T1 -> 후쿠오카 T1)', 
+            date: '2026-03-07', 
+            time: '08:40 ~ 10:20', 
+            type: 'flight', 
+            addr: '인천국제공항 제1여객터미널',
+            map: 'https://www.google.com/maps/search/?api=1&query=Incheon+Airport+Terminal+1' 
+        },
+        { 
+            id: 'flight-ret', 
+            name: '✈️ 인천 귀국 (후쿠오카 T1 -> 인천 T1)', 
+            date: '2026-03-11', 
+            time: '15:20 ~ 16:30', 
+            type: 'flight', 
+            addr: '후쿠오카공항 국제선 터미널',
+            map: 'https://www.google.com/maps/search/?api=1&query=Fukuoka+Airport+International+Terminal' 
+        },
+        { 
             id: 'res-01', 
             name: '후쿠오카 야끼니꾸 니쿠마루', 
             date: '2026-03-07', 

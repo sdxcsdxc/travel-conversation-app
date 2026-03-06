@@ -59,6 +59,17 @@ const appData = {
             recommendations: ['✨ 테츠야 특별 코스', '🍳 설로인 야키샤부 (계란 노른자)', '🥓 두툼한 우설 구이']
         },
         { 
+            id: 'bus-ten-yuf', 
+            name: '🚍 고속버스 (텐진 -> 유후인)', 
+            date: '2026-03-10', 
+            time: '10:55 ~ 13:17', 
+            type: 'transport', 
+            addr: '텐진 고속버스터미널',
+            map: 'https://www.google.com/maps/search/?api=1&query=Tenjin+Express+Bus+Terminal',
+            recommendations: ['터미널 3층에서 탑승', '유후인 에키마에 버스센터 도착']
+        },
+
+        { 
             id: 'res-bike-01', 
             name: '이토시마 전기자전거 렌탈', 
             date: '2026-03-10', 

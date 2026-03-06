@@ -1,4 +1,54 @@
 const appData = {
+    reservations: [
+        { 
+            id: 'res-01', 
+            name: '후쿠오카 야끼니꾸 니쿠마루', 
+            date: '2026-03-07', 
+            time: '18:00', 
+            type: 'food', 
+            addr: 'Fukuoka, Chuo Ward, Watanabedori, 5 Chome−1−26',
+            map: 'https://www.google.com/maps/search/?api=1&query=Yakiniku+Nikumaru+Fukuoka',
+            recommendations: ['🔥 특선 야끼니꾸 모둠', '🥩 우설 소금구이', '🍲 호르몬(내장) 전골']
+        },
+        { 
+            id: 'res-02', 
+            name: '친자 타키비야 (Chinza Takibiya)', 
+            date: '2026-03-08', 
+            time: '18:20', 
+            type: 'food', 
+            addr: 'Fukuoka, Chuo Ward, Imaizumi, 2 Chome-4-32',
+            map: 'https://www.google.com/maps/search/?api=1&query=Chinza+Takibiya+Fukuoka',
+            recommendations: ['🐟 가다랑어 짚불구이 (Warayaki)', '🍣 고등어 봉초밥', '🍚 이쿠라 미니 덮밥', '🐄 와규 숯불구이']
+        },
+        { 
+            id: 'res-03', 
+            name: 'YAKINIKU TETSUYA', 
+            date: '2026-03-09', 
+            time: '19:30', 
+            type: 'food', 
+            addr: 'Fukuoka, Chuo Ward, Daimyo, 1 Chome-14-1',
+            map: 'https://www.google.com/maps/search/?api=1&query=Yakiniku+Tetsuya+Fukuoka',
+            recommendations: ['✨ 테츠야 특별 코스', '🍳 설로인 야키샤부 (계란 노른자)', '🥓 두툼한 우설 구이']
+        },
+        { 
+            id: 'res-bike-01', 
+            name: '이토시마 전기자전거 렌탈', 
+            date: '2026-03-10', 
+            time: '오전 (예상)', 
+            type: 'transport', 
+            addr: '2186-1 Shimanogita, Itoshima, Fukuoka 819-1303 Japap',
+            map: 'https://www.google.com/maps/search/?api=1&query=2186-1+Shimanogita+Itoshima+Fukuoka' 
+        },
+        { 
+            id: 'res-hotel-01', 
+            name: '유후노 오야도 호타루 (료칸)', 
+            date: '2026-03-10', 
+            time: '15:00 (Check-in)', 
+            type: 'stay', 
+            addr: 'Oita, Yufu, Yufuincho Kawakami, 1791-1',
+            map: 'https://www.google.com/maps/search/?api=1&query=Yufuno+Oyado+Hotaru' 
+        }
+    ],
     categories: [
         { id: 'basic', name: '👋 기본/인사', icon: '👋' },
         { id: 'guide', name: '🗺️ 여행 가이드', icon: '🗺️' }, /* New */

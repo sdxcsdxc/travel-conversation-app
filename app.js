@@ -58,6 +58,7 @@ window.switchTab = (tab) => {
         currentCategory = 'favorites'; 
 
         // Render Hotel Card Section First
+        const resHtml = renderReservations();
         const hotelHtml = renderHotelCard();
         const scheduleHtml = renderSchedule();
         
@@ -67,8 +68,8 @@ window.switchTab = (tab) => {
         currentPhrases = allPhrases.filter(p => favorites.includes(p.ko));
         currentPhrases = [...new Map(currentPhrases.map(item => [item['ko'], item])).values()];
         
-        // Combine Hotel Card + Schedule + Favorites List
-        renderPhrasesList(hotelHtml + scheduleHtml); 
+        // Combine Reservations + Hotel Card + Schedule + Favorites List
+        renderPhrasesList(resHtml + hotelHtml + scheduleHtml); 
     }
 };
 
@@ -698,6 +699,47 @@ window.deleteHotelInfo = (index) => {
 };
 
 
+
+// Reservations Logic
+function renderReservations() {
+    if (!appData.reservations || appData.reservations.length === 0) return '';
+
+    // Sort by date and time
+    const sorted = [...appData.reservations].sort((a, b) => {
+        const dateDiff = a.date.localeCompare(b.date);
+        return dateDiff !== 0 ? dateDiff : a.time.localeCompare(b.time);
+    });
+
+    let html = `
+    <div class="reservation-card saved-section">
+        <div class="hotel-header">
+            <h3>📍 확정된 예약 내역</h3>
+        </div>
+        <div class="res-list">
+            ${sorted.map(res => `
+            <div class="res-item ${res.type}">
+                <div class="res-date-badge">${res.date.slice(5)} (${res.time})</div>
+                <div class="res-info">
+                    <div class="res-name">${res.name}</div>
+                    <div class="res-addr">${res.addr}</div>
+                    ${res.recommendations ? `
+                    <div class="res-menu-preview">
+                        🍴 추천: ${res.recommendations.join(', ')}
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="res-actions">
+                    <a href="${res.map}" target="_blank" class="btn-res-map">📍 지도</a>
+                    <button class="btn-res-show" onclick="smartAction('reserve', '${res.time}')">⏰ 알림</button>
+                </div>
+            </div>
+            `).join('')}
+        </div>
+    </div>
+    <div class="section-divider"></div>
+    `;
+    return html;
+}
 
 // Schedule Logic (Logistics Enhanced)
 function renderSchedule() {
